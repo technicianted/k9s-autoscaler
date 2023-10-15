@@ -1,0 +1,9 @@
+package: api
+output: gen.go
+generate:
+  models: true
+  client: true
+import-mapping:
+  ./autoscaler.yaml: k9s-autoscaler/pkg/proto
+output-options:
+  skip-prune: true

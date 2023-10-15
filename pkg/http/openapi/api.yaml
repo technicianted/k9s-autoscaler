@@ -1,0 +1,28 @@
+# Copyright (c) technicianted. All rights reserved.
+# Licensed under the MIT License.
+openapi: 3.0.0
+info:
+  title: K9s Autoscaler Reconciliation
+  description: |
+    k9s autoscaler reconciler
+  version: '0.0.1'
+
+components:
+
+paths:
+  /autoscalers:
+    get:
+      summary: Obtain a list of all defined autoscalers.
+      responses:
+        200:
+          description: Success.
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: |
+                Entity tag for this configuration. Used to detect configuration changes.
+          content:
+            application/json:
+              schema:
+                $ref: "./autoscaler.yaml#/components/schemas/Autoscaler"
