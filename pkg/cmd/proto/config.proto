@@ -1,0 +1,19 @@
+// Copyright (c) technicianted. All rights reserved.
+// Licensed under the MIT License.
+syntax = "proto3";
+
+option go_package = "k9s-autoscaler/pkg/cmd/proto;proto";
+
+import "pkg/providers/proto/configs.proto";
+import "google/protobuf/duration.proto";
+
+message ControllerConfig {
+    k9sautoscaler.providers.proto.ProviderConfig storage_client = 1;
+    k9sautoscaler.providers.proto.ProviderConfig metrics_client = 2;
+    k9sautoscaler.providers.proto.ProviderConfig scaling_client = 3;
+    optional k9sautoscaler.providers.proto.ProviderConfig events_client = 4;
+
+    google.protobuf.Duration resync_period = 8;
+    google.protobuf.Duration downscale_stabilization_window = 9;
+    double tolerance = 10;
+}

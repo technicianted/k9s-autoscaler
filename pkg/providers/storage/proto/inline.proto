@@ -1,0 +1,13 @@
+// Copyright (c) technicianted. All rights reserved.
+// Licensed under the MIT License.
+syntax = "proto3";
+
+package k9sautoscaler.providers.storage.proto;
+
+option go_package = "k9s-autoscaler/pkg/providers/storage/proto;proto";
+
+import "pkg/proto/autoscaler.proto";
+
+message InlineStorageConfig {
+    repeated k9sautoscaler.proto.Autoscaler autoscalers = 1;
+}

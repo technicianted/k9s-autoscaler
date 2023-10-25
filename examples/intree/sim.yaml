@@ -1,25 +1,3 @@
-K9s Autoscaler
----
-K9s Autoscaler is a weekend project to explore the idea of running Kubernetes Horizontal Pod Autoscaler as a standalone component outside of a Kubernetes cluster, to drive autoscaling for generic external objects using external metrics.
-
-### Objectives
-* Run outside Kubernetes environment while using latest and greates code from HPA.
-* Provide configuration file based autoscaler discovery and configuration.
-* Build metrics backends for generic Prometheus servers and Azure Monitor.
-* Build REST HTTP API to discover and configure autoscalers.
-* Fully extensible in and out of tree for storage, metrics and scaling adapters.
-
-#### Project status
-Early stage development.
-
-Command line tool is available that runs in-tree clients:
-```
-$ make
-$ bin/k9s-autoscaler controller --config examples/intree/sim.yaml
-```
-
-Sample configuration:
-```yaml
 # storageClient provides an adapter for autoscaler discovery and configuration.
 storageClient:
   # inline is a built-in storage client that uses in-line yaml configuration
@@ -66,7 +44,3 @@ eventsClient:
   # klog logs status updates to klogger.
   name: klog
 resyncPeriod: 5s
-```
-
-#### Kubernetes version
-v1.27.6

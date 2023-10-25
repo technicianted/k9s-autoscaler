@@ -25,10 +25,10 @@ type scaler struct {
 	scale.ScaleInterface
 
 	namespace string
-	scaler    types.Scaler
+	scaler    types.ScalingClient
 }
 
-func NewScaler(namespace string, s types.Scaler) scale.ScaleInterface {
+func NewScaler(namespace string, s types.ScalingClient) scale.ScaleInterface {
 	return &scaler{
 		namespace: namespace,
 		scaler:    s,

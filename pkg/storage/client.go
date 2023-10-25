@@ -6,11 +6,13 @@ import (
 	"fmt"
 	"path/filepath"
 	"sync"
+	"time"
 
 	prototypes "k9s-autoscaler/pkg/proto"
 	"k9s-autoscaler/pkg/scale"
 	"k9s-autoscaler/pkg/storage/types"
 
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	v2 "k8s.io/api/autoscaling/v2"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -48,6 +50,21 @@ func NewClient(statusUpdatedHandler types.AutoscalerStatusUpdateHandler) *Client
 
 func (c *Client) HorizontalPodAutoscalers(namespace string) apiv2.HorizontalPodAutoscalerInterface {
 	return newNamespacedClient(c, namespace)
+}
+
+func (c *Client) List() ([]*prototypes.Autoscaler, error) {
+	c.RLock()
+	defer c.RUnlock()
+
+	autoscalers := make([]*prototypes.Autoscaler, 0)
+	for _, autoscalersByName := range c.autoscalerByNamespaceName {
+		for _, autoscalerEntry := range autoscalersByName {
+			copy := proto.Clone(autoscalerEntry.autoscaler).(*prototypes.Autoscaler)
+			autoscalers = append(autoscalers, copy)
+		}
+	}
+
+	return autoscalers, nil
 }
 
 func (c *Client) Add(autoscaler *prototypes.Autoscaler) error {
@@ -211,6 +228,9 @@ func autoscalerToHPA(autoscaler *prototypes.Autoscaler) (*v2.HorizontalPodAutosc
 			Metrics:     metrics,
 			Behavior:    behavior,
 		},
+		Status: v2.HorizontalPodAutoscalerStatus{
+			LastScaleTime: &v1.Time{},
+		},
 	}, nil
 }
 
@@ -297,6 +317,8 @@ func hpaStatusToAutoScaler(status v2.HorizontalPodAutoscalerStatus) (*prototypes
 
 	if status.LastScaleTime != nil {
 		autoscalerStatus.LastScaleTime = timestamppb.New(status.LastScaleTime.Time)
+	} else {
+		autoscalerStatus.LastScaleTime = timestamppb.New(time.Time{})
 	}
 
 	return &autoscalerStatus, nil

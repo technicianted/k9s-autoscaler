@@ -1,0 +1,26 @@
+// Copyright (c) technicianted. All rights reserved.
+// Licensed under the MIT License.
+syntax = "proto3";
+
+package k9sautoscaler.providers.metrics.proto;
+
+option go_package = "k9s-autoscaler/pkg/providers/storage/proto;proto";
+
+import "google/protobuf/duration.proto";
+
+message MetricLoad {
+    google.protobuf.Duration timespan = 1;
+    double load = 2;
+}
+
+message AutoscalerConfig {
+    string autoscaler_name = 1;
+    string autoscaler_namespace = 2;
+    double max_load_per_instance = 3;
+    repeated MetricLoad load = 4;
+}
+
+message SimMetricsConfig {
+    string metric_name = 1;
+    repeated AutoscalerConfig autoscalers_config = 2; 
+}

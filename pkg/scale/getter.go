@@ -13,10 +13,10 @@ var (
 )
 
 type getter struct {
-	scaler types.Scaler
+	scaler types.ScalingClient
 }
 
-func NewGetter(scaler types.Scaler) scale.ScalesGetter {
+func NewGetter(scaler types.ScalingClient) scale.ScalesGetter {
 	return &getter{
 		scaler: scaler,
 	}

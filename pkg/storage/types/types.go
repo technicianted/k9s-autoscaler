@@ -12,6 +12,7 @@ const (
 )
 
 type AutoscalerCRUDder interface {
+	List() ([]*prototypes.Autoscaler, error)
 	Add(autoscaler *prototypes.Autoscaler) error
 	Update(autoscaler *prototypes.Autoscaler) error
 	Delete(name, namespace string) error

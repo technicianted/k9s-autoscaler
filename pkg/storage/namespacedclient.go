@@ -98,7 +98,7 @@ func (c *namespacedClient) List(ctx context.Context, opts v1.ListOptions) (*v2.H
 		}
 	}
 
-	klog.V(0).InfoS("list", "list", list)
+	klog.V(1).InfoS("list", "list", list)
 	return list, nil
 }
 

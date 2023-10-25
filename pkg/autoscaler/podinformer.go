@@ -47,7 +47,7 @@ func (fake *podFakeLister) List(selector labels.Selector) (ret []*v1.Pod, err er
 				Phase: v1.PodRunning,
 				Conditions: []v1.PodCondition{
 					{
-						Type:   v1.ContainersReady,
+						Type:   v1.PodReady,
 						Status: v1.ConditionTrue,
 					},
 				},

@@ -62,6 +62,21 @@ func (mr *MockAutoscalerCRUDderMockRecorder) Delete(name, namespace interface{})
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockAutoscalerCRUDder)(nil).Delete), name, namespace)
 }
 
+// List mocks base method.
+func (m *MockAutoscalerCRUDder) List() ([]*proto.Autoscaler, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "List")
+	ret0, _ := ret[0].([]*proto.Autoscaler)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// List indicates an expected call of List.
+func (mr *MockAutoscalerCRUDderMockRecorder) List() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockAutoscalerCRUDder)(nil).List))
+}
+
 // Update mocks base method.
 func (m *MockAutoscalerCRUDder) Update(autoscaler *proto.Autoscaler) error {
 	m.ctrl.T.Helper()

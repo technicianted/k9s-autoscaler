@@ -6,6 +6,7 @@ import (
 	"context"
 	"time"
 
+	"k9s-autoscaler/pkg/autoscaler/types"
 	"k9s-autoscaler/pkg/scale"
 	"k9s-autoscaler/pkg/storage"
 
@@ -34,7 +35,7 @@ func NewController(
 	metricsClient metricsclient.MetricsClient,
 	resyncPeriod time.Duration,
 	downscaleStabilisationWindow time.Duration,
-	tolerance float64) *controller {
+	tolerance float64) types.Controller {
 
 	c := &controller{
 		storageClient: storageClient,

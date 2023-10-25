@@ -1,0 +1,14 @@
+// Copyright (c) technicianted. All rights reserved.
+// Licensed under the MIT License.
+syntax = "proto3";
+
+package k9sautoscaler.providers.proto;
+
+option go_package = "k9s-autoscaler/pkg/providers/proto;proto";
+
+import "google/protobuf/any.proto";
+
+message ProviderConfig {
+    string name = 1;
+    google.protobuf.Any config = 2;
+}

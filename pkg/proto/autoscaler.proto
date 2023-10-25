@@ -2,7 +2,9 @@
 // Licensed under the MIT License.
 syntax = "proto3";
 
-option go_package = "k9sautoscaler/pkg/proto;proto";
+package k9sautoscaler.proto;
+
+option go_package = "k9s-autoscaler/pkg/proto;proto";
 
 import "google/protobuf/timestamp.proto";
 
@@ -99,7 +101,7 @@ message Condition {
 
 message AutoscalerSpec {
 	int32 min = 1;
-	int32 Max = 2;
+	int32 Max = 2 [json_name = "max"];
 	repeated Metric metrics = 3;
 	optional Behavior behavior = 4;
 }
