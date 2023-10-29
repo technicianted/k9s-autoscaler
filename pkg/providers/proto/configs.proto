@@ -8,6 +8,11 @@ option go_package = "k9s-autoscaler/pkg/providers/proto;proto";
 
 import "google/protobuf/any.proto";
 
+// Defines a generic configuration for a provider adapter. It uses 
+// google.protobuf.Any to implement typed configurations.
+// Users can refer to a provider by register name for instantation. See
+// pkg/providers/registration.go
+// see: examples/intree/sim.yaml as an example.
 message ProviderConfig {
     string name = 1;
     google.protobuf.Any config = 2;

@@ -8,6 +8,10 @@ option go_package = "k9s-autoscaler/pkg/providers/storage/proto;proto";
 
 import "pkg/proto/autoscaler.proto";
 
+// Defines configuration for inline autoscaler storage provider adapter. It embeds
+// autoscaler proto configs.
+// see: examples/intree/sim.yaml for an example.
 message InlineStorageConfig {
+    // List of defined autoscalers.
     repeated k9sautoscaler.proto.Autoscaler autoscalers = 1;
 }

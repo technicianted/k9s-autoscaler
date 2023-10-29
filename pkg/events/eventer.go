@@ -14,6 +14,8 @@ import (
 	v1core "k8s.io/client-go/kubernetes/typed/core/v1"
 )
 
+// A partial implementation of k8s EventInterface that passes Create() calls
+// to the adapter callback.
 type eventer struct {
 	v1core.EventInterface
 
@@ -21,6 +23,8 @@ type eventer struct {
 	namespace string
 }
 
+// Create a new k8s EventInterface for namespace that uses creator as a callback
+// to create the events.
 func NewEventer(namespace string, creator types.EventCreator) v1core.EventInterface {
 	return &eventer{
 		namespace: namespace,

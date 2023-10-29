@@ -12,6 +12,7 @@ var (
 	_ scale.ScalesGetter = &getter{}
 )
 
+// Simple adapter for k8s ScalingClient.
 type getter struct {
 	scaler types.ScalingClient
 }

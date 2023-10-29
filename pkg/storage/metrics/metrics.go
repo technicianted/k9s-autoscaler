@@ -36,6 +36,9 @@ var (
 	_ prometheus.Collector = &metricsCollector{}
 )
 
+// A wrapper around storage metrics that impelments prometheus.Collector
+// such that we always emit metrics for current autoscalers, and will stop
+// emitting those that were updated out or deleted.
 type metricsCollector struct {
 	sync.Mutex
 
@@ -49,6 +52,8 @@ type metricsCollector struct {
 	metricsCurrentMetric    *prometheus.GaugeVec
 }
 
+// Creates and registers a new Collector for storage metrics that uses getter
+// to obtain a list of available autoscalers.
 func RegisterMetricsCollector(getter autoscalingv2.HorizontalPodAutoscalersGetter) error {
 	collector := metricsCollector{
 		getter: getter,

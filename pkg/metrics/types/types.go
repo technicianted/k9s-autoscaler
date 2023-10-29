@@ -9,8 +9,10 @@ import (
 
 //go:generate mockgen -package mocks -destination ../mocks/metrics.go -source $GOFILE
 
+// An interface defining a provider adapter implementation that can fetch metric
+// values.
 type MetricsClient interface {
-	// GetExternalMetric gets all the values of a given external metric
-	// that match the specified selector.
+	// Get metric values metricName for autoscaler in namespace. Returns an array
+	// of values and values timestamp.
 	GetMetric(ctx context.Context, autoscaler, namespace, metricName string) ([]int64, time.Time, error)
 }

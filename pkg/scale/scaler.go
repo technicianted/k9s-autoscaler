@@ -22,6 +22,7 @@ import (
 	"k8s.io/klog/v2"
 )
 
+// An adapter for k8s ScalingClient interface.
 type scaler struct {
 	scale.ScaleInterface
 
@@ -29,6 +30,7 @@ type scaler struct {
 	scaler    types.ScalingClient
 }
 
+// Create a new scaler adapter for namespace that uses s to pass scaling calls.
 func NewScaler(namespace string, s types.ScalingClient) scale.ScaleInterface {
 	return &scaler{
 		namespace: namespace,

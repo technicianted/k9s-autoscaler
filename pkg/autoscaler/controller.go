@@ -19,6 +19,9 @@ import (
 	metricsclient "k8s.io/kubernetes/pkg/controller/podautoscaler/metrics"
 )
 
+// A thin wrapper around HorizontalController that implments convenience
+// adapter initialization at a high level such that users can only provide
+// minimal boiler plate and concrete implemention.
 type controller struct {
 	apimeta.RESTMapper
 	autoscalinginformers.HorizontalPodAutoscalerInformer
@@ -28,6 +31,8 @@ type controller struct {
 	k8sController *podautoscaler.HorizontalController
 }
 
+// Create a new controller with provided adapters. Controller needs to be started
+// by calling Run().
 func NewController(
 	storageClient *storage.Client,
 	evtNamespacer v1core.EventsGetter,

@@ -8,18 +8,26 @@ option go_package = "k9s-autoscaler/pkg/providers/storage/proto;proto";
 
 import "google/protobuf/duration.proto";
 
+// Define a load entry for a given duration.
 message MetricLoad {
+    // Duration to maintain load.
     google.protobuf.Duration timespan = 1;
+    // Simulated total load.
     double load = 2;
 }
 
+// Define a metrics configuration for an autoscaler.
 message AutoscalerConfig {
     string autoscaler_name = 1;
     string autoscaler_namespace = 2;
+    // Assumed max load per instance to be able to calculate load percentage.
     double max_load_per_instance = 3;
+    // One or more load schedule entries.
     repeated MetricLoad load = 4;
 }
 
+// Simulated metrics config.
+// see: examples/intree/sim.yaml for an example.
 message SimMetricsConfig {
     string metric_name = 1;
     repeated AutoscalerConfig autoscalers_config = 2; 

@@ -28,6 +28,8 @@ type autoscalerEntry struct {
 	hpa        *v2.HorizontalPodAutoscaler
 }
 
+// An autoscaler client that implements storage mapping between K9s and K8s
+// autoscalers by providing adapters to Kubernetes lister, informer, etc.
 type Client struct {
 	sync.RWMutex
 	apiv2.HorizontalPodAutoscalersGetter
@@ -39,6 +41,8 @@ type Client struct {
 	watchesByWatchNamespace   map[*autoscalerWatch]string
 }
 
+// Create a new client that uses statusUpdateHandler to propagate changes in
+// underlying autoscaler status by the HPA.
 func NewClient(statusUpdatedHandler types.AutoscalerStatusUpdateHandler) (*Client, error) {
 	c := &Client{
 		statusUpdateHandler:       statusUpdatedHandler,
@@ -54,10 +58,15 @@ func NewClient(statusUpdatedHandler types.AutoscalerStatusUpdateHandler) (*Clien
 	return c, nil
 }
 
+// Implement HorizontalPodAutoscalersGetter k8s interface.
 func (c *Client) HorizontalPodAutoscalers(namespace string) apiv2.HorizontalPodAutoscalerInterface {
 	return newNamespacedClient(c, namespace)
 }
 
+// Returns a list of all available autoscalers. Returned objects are clones
+// of the internal storage so they are safe to be modified without affecting
+// internal state.
+// Implements AutoscalerCRUDder.
 func (c *Client) List() ([]*prototypes.Autoscaler, error) {
 	c.RLock()
 	defer c.RUnlock()
@@ -73,6 +82,8 @@ func (c *Client) List() ([]*prototypes.Autoscaler, error) {
 	return autoscalers, nil
 }
 
+// Adds a new autoscaler. All defined k8s watches will be notified.
+// Implements AutoscalerCRUDder.
 func (c *Client) Add(autoscaler *prototypes.Autoscaler) error {
 	klog.V(0).InfoS("adding new autoscaler", "autoscaler", autoscaler)
 
@@ -101,6 +112,8 @@ func (c *Client) Add(autoscaler *prototypes.Autoscaler) error {
 	return nil
 }
 
+// Updates an existing autoscaler. All defined k8s watches will be notified.
+// Implements AutoscalerCRUDder.
 func (c *Client) Update(autoscaler *prototypes.Autoscaler) error {
 	klog.V(0).InfoS("updating autoscaler", "autoscaler", autoscaler)
 
@@ -129,6 +142,9 @@ func (c *Client) Update(autoscaler *prototypes.Autoscaler) error {
 	return nil
 }
 
+// Deletes an existing autoscaler with name and namespace. All defined k8s
+// watches will be notified.
+// Implements AutoscalerCRUDder.
 func (c *Client) Delete(name, namespace string) error {
 	klog.V(0).InfoS("deleting autoscaler", "name", name, "namespace", namespace)
 	c.Lock()

@@ -12,10 +12,12 @@ var (
 	_ v1core.EventsGetter = &getter{}
 )
 
+// An adapter implementation of k8s EventGetter.
 type getter struct {
 	creator types.EventCreator
 }
 
+// Create a new k8s EventGetter that uses creator to create new events.
 func NewGetter(creator types.EventCreator) v1core.EventsGetter {
 	return &getter{
 		creator: creator,

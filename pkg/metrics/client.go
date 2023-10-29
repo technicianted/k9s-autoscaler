@@ -13,12 +13,16 @@ import (
 	metricsclient "k8s.io/kubernetes/pkg/controller/podautoscaler/metrics"
 )
 
+// Adapter partial implemenation of k8s MetricsClient. Since k9s autoscaler
+// uses k8s autoscaler ExternalMetrics, only these functions are implemented.
 type client struct {
 	metricsclient.MetricsClient
 
 	callbackClient types.MetricsClient
 }
 
+// Create a new adapter k8s MetricsClient that calls callbackClient to get metric
+// values.
 func NewClient(callbackClient types.MetricsClient) metricsclient.MetricsClient {
 	return &client{
 		callbackClient: callbackClient,

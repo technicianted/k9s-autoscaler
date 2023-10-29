@@ -16,6 +16,7 @@ const (
 	KLogProviderName = "klog"
 )
 
+// A simple event provider adapter that emits the event to klog.
 type klogClient struct{}
 
 func init() {

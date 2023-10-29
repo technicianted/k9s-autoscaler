@@ -31,6 +31,11 @@ type autoscalerState struct {
 	currentInstanceCount int32
 }
 
+// Simulation metrics provider adapter for testing. It also provides a scaling
+// provider adapter such that when scale changes it can recaculate the load
+// for metrics.
+// It implements a single metric that returns the average load as a percentage.
+// see pkg/providers/metrics/proto/sim.proto
 type metricsSim struct {
 	config                           *proto.SimMetricsConfig
 	startTime                        time.Time

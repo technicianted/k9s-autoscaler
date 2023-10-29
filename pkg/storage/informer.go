@@ -19,10 +19,12 @@ var (
 	_ autoscalinginformers.HorizontalPodAutoscalerInformer = &HPAInformer{}
 )
 
+// A thin implementation of HorizontalPodAutoscalerInformer adapter.
 type HPAInformer struct {
 	hpaInformer cache.SharedIndexInformer
 }
 
+// Create a new informer from storageClient.
 func NewInformer(storageClient *Client) *HPAInformer {
 	informer := &HPAInformer{
 		hpaInformer: cache.NewSharedIndexInformer(

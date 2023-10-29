@@ -10,6 +10,9 @@ import (
 
 //go:generate mockgen -package mocks -destination ../mocks/events.go -source $GOFILE
 
+// Defines a provider adapter interface that will be called whenever the underlying
+// HPA emits an event via k8s recorder interface.
 type EventCreator interface {
+	// Create a new event for autoscaler name and namespace.
 	Create(ctx context.Context, name, namespace string, event *prototypes.AutoscalerEvent) error
 }

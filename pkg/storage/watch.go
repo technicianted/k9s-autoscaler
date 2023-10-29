@@ -17,6 +17,7 @@ type unwatcher interface {
 	removeWatch(watch *autoscalerWatch)
 }
 
+// apimachinery watch adapter.
 type autoscalerWatch struct {
 	sync.RWMutex
 	unwatcher unwatcher

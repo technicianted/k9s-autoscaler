@@ -14,6 +14,9 @@ import (
 	"k8s.io/klog/v2"
 )
 
+// Implement a HorizontalPodAutoscalerInterface adapter. It only implements
+// required functions not all the interface functions. Calling unimplemented
+// functions will cause a panic.
 type namespacedClient struct {
 	apiv2.HorizontalPodAutoscalerInterface
 
@@ -21,6 +24,7 @@ type namespacedClient struct {
 	namespace string
 }
 
+// Creates a new namespacedClient adapter for client and namespace.
 func newNamespacedClient(client *Client, namespace string) *namespacedClient {
 	return &namespacedClient{
 		client:    client,

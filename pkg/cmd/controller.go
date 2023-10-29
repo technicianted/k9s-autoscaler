@@ -26,12 +26,16 @@ import (
 	"sigs.k8s.io/yaml"
 )
 
+// Define a core autoscaler controller command abstraction that can be used
+// to construct concrete instances. For example using a CLI.
 type ControllerCMD struct {
 	opts       Options
 	controller autoscalertypes.Controller
 	cancel     context.CancelFunc
 }
 
+// Creates a new instanec with opts. Returned controller command must be started
+// by calling Start().
 func NewControllerCMD(opts Options) (*ControllerCMD, error) {
 	if len(opts.YAMLConfigPath) == 0 {
 		return nil, fmt.Errorf("config path must be specified")
@@ -80,6 +84,9 @@ func (c *ControllerCMD) Stop() error {
 	return nil
 }
 
+// Utility function that creates a new autoscaler controller from given configuration
+// proto message. It handles all the required validation and initialization of
+// provider adapters.
 func NewControllerFromConfigs(configs *configproto.ControllerConfig) (autoscalertypes.Controller, error) {
 	if configs.StorageClient == nil {
 		return nil, fmt.Errorf("no storage client specified")

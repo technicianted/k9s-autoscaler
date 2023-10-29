@@ -7,13 +7,28 @@ option go_package = "k9s-autoscaler/pkg/cmd/proto;proto";
 import "pkg/providers/proto/configs.proto";
 import "google/protobuf/duration.proto";
 
+// Define a full autoscaler configuration structure. Configuration is divided
+// into multipl main sections defining different adapters. Each adapter 
+// is a generic ProviderConfig that can contain provider-specific further
+// proto configs.
+// See: examples/intree/sim.yaml for a simple example.
 message ControllerConfig {
+    // Define the storage client provider adapter configuration.
     k9sautoscaler.providers.proto.ProviderConfig storage_client = 1;
+    // Define the metrics provider adapter configuration.
     k9sautoscaler.providers.proto.ProviderConfig metrics_client = 2;
+    // Define the scaling provider adapter configuration.
     k9sautoscaler.providers.proto.ProviderConfig scaling_client = 3;
+    // Optional events provider adapter. If not provided, a simple logger is 
+    // used.
     optional k9sautoscaler.providers.proto.ProviderConfig events_client = 4;
 
+    // Autoscaler configuration resync duration period.
     google.protobuf.Duration resync_period = 8;
+    // Autoscaler downscale stablization window.
+    // See: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#algorithm-details
     google.protobuf.Duration downscale_stabilization_window = 9;
+    // Autoscaler scaling change tolerance.
+    // See: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#algorithm-details
     double tolerance = 10;
 }

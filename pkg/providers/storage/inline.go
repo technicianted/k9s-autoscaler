@@ -23,6 +23,10 @@ func init() {
 	providers.RegisterStorageClient(ProviderName, &inlineStorage{})
 }
 
+// Inline storage provider defines a provider that reads autoscaler configurations
+// embedded in its own convigurations.
+// Once loaded, configurations are immutable.
+// see: examples/intree/sim.yaml for an example.
 func (f *inlineStorage) StorageClient(config *anypb.Any) (*storage.Client, error) {
 	inlineConfig := proto.InlineStorageConfig{}
 	if err := anypb.UnmarshalTo(config, &inlineConfig, protob.UnmarshalOptions{}); err != nil {

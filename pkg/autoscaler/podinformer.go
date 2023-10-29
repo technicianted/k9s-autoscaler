@@ -11,6 +11,10 @@ import (
 	"k8s.io/client-go/tools/cache"
 )
 
+// A hacky implementation of PodInformer to provide fake pod objects to the HPA.
+// HPA requires that `Replicas` concept maps to actual Pods.
+// This implementation uses information encoded in labels.Selectors to trick
+// the caller into thinking that external `scale` maps to existing ready pods.
 type podInformer struct{}
 
 type noopSharedIndexInformer struct {
