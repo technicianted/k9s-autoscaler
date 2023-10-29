@@ -10,6 +10,7 @@ import (
 
 	prototypes "k9s-autoscaler/pkg/proto"
 	"k9s-autoscaler/pkg/scale"
+	"k9s-autoscaler/pkg/storage/metrics"
 	"k9s-autoscaler/pkg/storage/types"
 
 	"google.golang.org/protobuf/proto"
@@ -38,14 +39,19 @@ type Client struct {
 	watchesByWatchNamespace   map[*autoscalerWatch]string
 }
 
-func NewClient(statusUpdatedHandler types.AutoscalerStatusUpdateHandler) *Client {
-	return &Client{
+func NewClient(statusUpdatedHandler types.AutoscalerStatusUpdateHandler) (*Client, error) {
+	c := &Client{
 		statusUpdateHandler:       statusUpdatedHandler,
 		autoscalerByNamespaceName: make(map[string]map[string]*autoscalerEntry),
 		watchersByNamespace:       make(map[string]types.AutoscalerStatusUpdateHandler),
 		watchesByNamespace:        make(map[string]map[*autoscalerWatch]bool),
 		watchesByWatchNamespace:   make(map[*autoscalerWatch]string),
 	}
+	if err := metrics.RegisterMetricsCollector(c); err != nil {
+		return nil, err
+	}
+
+	return c, nil
 }
 
 func (c *Client) HorizontalPodAutoscalers(namespace string) apiv2.HorizontalPodAutoscalerInterface {

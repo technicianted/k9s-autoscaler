@@ -68,7 +68,8 @@ func TestAutoscalerControllerNoScale(t *testing.T) {
 			klog.InfoS("status update", "status", autoscaler.Status)
 		}).AnyTimes()
 
-	storageClient := storage.NewClient(autoscalerUpdateMock)
+	storageClient, err := storage.NewClient(autoscalerUpdateMock)
+	require.NoError(t, err)
 	controller := NewController(
 		storageClient,
 		eventNamespacer,
@@ -82,7 +83,7 @@ func TestAutoscalerControllerNoScale(t *testing.T) {
 	defer cancel()
 	go controller.Run(ctx, 1)
 
-	err := storageClient.Add(&prototypes.Autoscaler{
+	err = storageClient.Add(&prototypes.Autoscaler{
 		Name:      t.Name(),
 		Namespace: t.Name(),
 		Spec: &prototypes.AutoscalerSpec{

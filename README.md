@@ -42,6 +42,7 @@ storageClient:
 metricsClient:
   # sim is a metricsClient and scalingClient that can be used to simulate scaling
   # and metrics reading based on predefined time intervals.
+  # it returns a metric based on average simulated load percentage.
   name: sim
   config:
     "@type": type.googleapis.com/k9sautoscaler.providers.metrics.proto.SimMetricsConfig
@@ -49,13 +50,18 @@ metricsClient:
     autoscalersConfig:
     - autoscalerName: testauto1
       autoscalerNamespace: testnamespace
+      # tell the simulation the max possible load per instance. used to calculate
+      # load percentage metric.
       maxLoadPerInstance: 10.0
+      # describe simulated total load on the system in a periodic manner. once
+      # time reaches the end of all defined periods, it starts from first period
+      # again.
       load:
-      - timespan: 10s
+      - timespan: 20s
         load: 100
-      - timespan: 10s
+      - timespan: 20s
         load: 200 
-      - timespan: 10s
+      - timespan: 20s
         load: 50
 # scalingClient provides an adapter for getting and setting scale.
 scalingClient:
@@ -65,8 +71,19 @@ scalingClient:
 eventsClient:
   # klog logs status updates to klogger.
   name: klog
+# run the autoscaler sync loop every 5s. in a production setup a typical value
+# is 15s.
 resyncPeriod: 5s
 ```
+
+After running the above for a few minutes, prometheus would display something like this:
+
+<p align="center">
+  <img width="512" src="images/prom-sample-current-scale.png"/>
+</p>
+<p align="center">
+  <img width="512" src="images/prom-sample-metrics-current.png"/>
+</p>
 
 #### Kubernetes version
 v1.27.6

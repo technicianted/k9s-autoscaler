@@ -26,7 +26,8 @@ func TestClientCRUD(t *testing.T) {
 	defer mockCtrl.Finish()
 
 	statusUpdateHandler := mocks.NewMockAutoscalerStatusUpdateHandler(mockCtrl)
-	client := NewClient(statusUpdateHandler)
+	client, err := NewClient(statusUpdateHandler)
+	require.NoError(t, err)
 
 	autoscaler := prototypes.Autoscaler{
 		Name:      "testas",
@@ -42,7 +43,7 @@ func TestClientCRUD(t *testing.T) {
 			},
 		},
 	}
-	err := client.Add(&autoscaler)
+	err = client.Add(&autoscaler)
 	require.NoError(t, err)
 
 	hpa, err := client.HorizontalPodAutoscalers(autoscaler.Namespace).Get(context.Background(), autoscaler.Name, v1.GetOptions{})
@@ -73,7 +74,8 @@ func TestClientK8sCacheOperationsBefore(t *testing.T) {
 	defer mockCtrl.Finish()
 
 	statusUpdateHandler := mocks.NewMockAutoscalerStatusUpdateHandler(mockCtrl)
-	client := NewClient(statusUpdateHandler)
+	client, err := NewClient(statusUpdateHandler)
+	require.NoError(t, err)
 
 	informer := cache.NewSharedIndexInformer(
 		&cache.ListWatch{
@@ -103,7 +105,7 @@ func TestClientK8sCacheOperationsBefore(t *testing.T) {
 		},
 	}
 	// adds
-	err := client.Add(&autoscaler)
+	err = client.Add(&autoscaler)
 	require.NoError(t, err)
 
 	stopChan := make(chan struct{})
@@ -128,7 +130,8 @@ func TestClientK8sCacheOperationsAfter(t *testing.T) {
 	defer mockCtrl.Finish()
 
 	statusUpdateHandler := mocks.NewMockAutoscalerStatusUpdateHandler(mockCtrl)
-	client := NewClient(statusUpdateHandler)
+	client, err := NewClient(statusUpdateHandler)
+	require.NoError(t, err)
 
 	informer := cache.NewSharedIndexInformer(
 		&cache.ListWatch{
@@ -166,7 +169,7 @@ func TestClientK8sCacheOperationsAfter(t *testing.T) {
 		},
 	}
 	// adds
-	err := client.Add(&autoscaler)
+	err = client.Add(&autoscaler)
 	require.NoError(t, err)
 	time.Sleep(100 * time.Millisecond)
 	obj, exists, err := informer.GetIndexer().GetByKey(autoscaler.Namespace + "/" + autoscaler.Name)

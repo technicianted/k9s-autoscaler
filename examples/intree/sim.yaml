@@ -29,11 +29,11 @@ metricsClient:
       autoscalerNamespace: testnamespace
       maxLoadPerInstance: 10.0
       load:
-      - timespan: 10s
+      - timespan: 20s
         load: 100
-      - timespan: 10s
+      - timespan: 20s
         load: 200 
-      - timespan: 10s
+      - timespan: 20s
         load: 50
 # scalingClient provides an adapter for getting and setting scale.
 scalingClient:

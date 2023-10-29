@@ -32,7 +32,10 @@ func (f *inlineStorage) StorageClient(config *anypb.Any) (*storage.Client, error
 		return nil, fmt.Errorf("no autoscalers specified")
 	}
 
-	client := storage.NewClient(f)
+	client, err := storage.NewClient(f)
+	if err != nil {
+		return nil, err
+	}
 	for _, autoscalerConfig := range inlineConfig.Autoscalers {
 		if err := client.Add(autoscalerConfig); err != nil {
 			return nil, err

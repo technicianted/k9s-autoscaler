@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	prototypes "k9s-autoscaler/pkg/proto"
 	"k9s-autoscaler/pkg/scale/types"
@@ -39,8 +40,10 @@ func NewScaler(namespace string, s types.ScalingClient) scale.ScaleInterface {
 func (s *scaler) Get(ctx context.Context, resource schema.GroupResource, name string, opts metav1.GetOptions) (*autoscalingapi.Scale, error) {
 	klog.V(1).InfoS("get scale", "name", name)
 
+	opTimer := time.Now()
 	scale, err := s.scaler.GetScale(ctx, name, s.namespace)
 	if err != nil {
+		scaleLatencyMetric.WithLabelValues(name, s.namespace, opGet, "true").Observe(time.Since(opTimer).Seconds())
 		return nil, err
 	}
 
@@ -62,6 +65,7 @@ func (s *scaler) Get(ctx context.Context, resource schema.GroupResource, name st
 		})
 	}
 	if len(errs) > 0 {
+		scaleLatencyMetric.WithLabelValues(name, s.namespace, opGet, "true").Observe(time.Since(opTimer).Seconds())
 		return nil, errors.NewInvalid(schema.GroupKind{
 			Group: resource.Group,
 			Kind:  "scale",
@@ -69,6 +73,8 @@ func (s *scaler) Get(ctx context.Context, resource schema.GroupResource, name st
 			name,
 			errs)
 	}
+
+	scaleLatencyMetric.WithLabelValues(name, s.namespace, opGet, "").Observe(time.Since(opTimer).Seconds())
 
 	return &autoscalingapi.Scale{
 		ObjectMeta: metav1.ObjectMeta{

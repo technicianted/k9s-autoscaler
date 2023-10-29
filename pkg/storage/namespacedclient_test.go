@@ -23,7 +23,8 @@ func TestNamespacedClientWatches(t *testing.T) {
 	defer mockCtrl.Finish()
 
 	statusUpdateHandler := mocks.NewMockAutoscalerStatusUpdateHandler(mockCtrl)
-	client := NewClient(statusUpdateHandler)
+	client, err := NewClient(statusUpdateHandler)
+	require.NoError(t, err)
 
 	autoscaler := prototypes.Autoscaler{
 		Name:      "testas",
@@ -98,7 +99,8 @@ func TestNamespacedClientWatchesAllNamespaces(t *testing.T) {
 	defer mockCtrl.Finish()
 
 	statusUpdateHandler := mocks.NewMockAutoscalerStatusUpdateHandler(mockCtrl)
-	client := NewClient(statusUpdateHandler)
+	client, err := NewClient(statusUpdateHandler)
+	require.NoError(t, err)
 
 	autoscaler := prototypes.Autoscaler{
 		Name:      "testas",
@@ -173,7 +175,8 @@ func TestNamespacedClientUpdateStatus(t *testing.T) {
 	defer mockCtrl.Finish()
 
 	statusUpdateHandler := mocks.NewMockAutoscalerStatusUpdateHandler(mockCtrl)
-	client := NewClient(statusUpdateHandler)
+	client, err := NewClient(statusUpdateHandler)
+	require.NoError(t, err)
 
 	autoscaler := prototypes.Autoscaler{
 		Name:      "testas",
@@ -190,7 +193,7 @@ func TestNamespacedClientUpdateStatus(t *testing.T) {
 		},
 	}
 
-	err := client.Add(&autoscaler)
+	err = client.Add(&autoscaler)
 	require.NoError(t, err)
 
 	statusUpdateHandler.EXPECT().AutoscalerStatusUpdated(gomock.Any()).DoAndReturn(
@@ -219,10 +222,11 @@ func TestNamespacedClientErrors(t *testing.T) {
 	defer mockCtrl.Finish()
 
 	statusUpdateHandler := mocks.NewMockAutoscalerStatusUpdateHandler(mockCtrl)
-	client := NewClient(statusUpdateHandler)
+	client, err := NewClient(statusUpdateHandler)
+	require.NoError(t, err)
 
 	// get
-	_, err := client.HorizontalPodAutoscalers("none").Get(context.Background(), "none", v1.GetOptions{})
+	_, err = client.HorizontalPodAutoscalers("none").Get(context.Background(), "none", v1.GetOptions{})
 	require.Error(t, err)
 	require.True(t, errors.IsNotFound(err))
 

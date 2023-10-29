@@ -84,7 +84,7 @@ func (c *namespacedClient) Get(ctx context.Context, name string, opts v1.GetOpti
 }
 
 func (c *namespacedClient) List(ctx context.Context, opts v1.ListOptions) (*v2.HorizontalPodAutoscalerList, error) {
-	klog.V(0).InfoS("listing hpas", "namespace", c.namespace)
+	klog.V(10).InfoS("listing hpas", "namespace", c.namespace)
 
 	c.client.RLock()
 	defer c.client.RUnlock()

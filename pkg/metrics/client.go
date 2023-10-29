@@ -27,5 +27,13 @@ func NewClient(callbackClient types.MetricsClient) metricsclient.MetricsClient {
 
 func (c *client) GetExternalMetric(metricName string, namespace string, selector labels.Selector) ([]int64, time.Time, error) {
 	autoscalerName := storage.DecodeMetricHPA(selector)
-	return c.callbackClient.GetMetric(context.TODO(), autoscalerName, namespace, metricName)
+	startTime := time.Now()
+	values, ts, err := c.callbackClient.GetMetric(context.TODO(), autoscalerName, namespace, metricName)
+	if err != nil {
+		metricLatencyMetric.WithLabelValues(autoscalerName, namespace, metricName, "true").Observe(float64(time.Since(startTime)))
+		return nil, time.Time{}, err
+	}
+	metricLatencyMetric.WithLabelValues(autoscalerName, namespace, metricName, "").Observe(float64(time.Since(startTime)))
+
+	return values, ts, nil
 }
