@@ -4,10 +4,11 @@ package metrics
 
 import (
 	"context"
+	"fmt"
+	"strings"
 	"time"
 
 	"k9s-autoscaler/pkg/metrics/types"
-	"k9s-autoscaler/pkg/storage"
 
 	"k8s.io/apimachinery/pkg/labels"
 	metricsclient "k8s.io/kubernetes/pkg/controller/podautoscaler/metrics"
@@ -30,14 +31,35 @@ func NewClient(callbackClient types.MetricsClient) metricsclient.MetricsClient {
 }
 
 func (c *client) GetExternalMetric(metricName string, namespace string, selector labels.Selector) ([]int64, time.Time, error) {
-	autoscalerName := storage.DecodeMetricHPA(selector)
-	startTime := time.Now()
-	values, ts, err := c.callbackClient.GetMetric(context.TODO(), autoscalerName, namespace, metricName)
+	mapSelector, err := convertSelectorToLabelsMap(selector)
 	if err != nil {
-		metricLatencyMetric.WithLabelValues(autoscalerName, namespace, metricName, "true").Observe(float64(time.Since(startTime)))
 		return nil, time.Time{}, err
 	}
-	metricLatencyMetric.WithLabelValues(autoscalerName, namespace, metricName, "").Observe(float64(time.Since(startTime)))
+
+	startTime := time.Now()
+	values, ts, err := c.callbackClient.GetMetric(
+		context.TODO(),
+		metricName,
+		namespace, mapSelector)
+	if err != nil {
+		metricLatencyMetric.WithLabelValues(namespace, metricName, "true").Observe(float64(time.Since(startTime)))
+		return nil, time.Time{}, err
+	}
+	metricLatencyMetric.WithLabelValues(namespace, metricName, "").Observe(float64(time.Since(startTime)))
 
 	return values, ts, nil
+}
+
+func convertSelectorToLabelsMap(selector labels.Selector) (map[string]string, error) {
+	selectorMap := map[string]string{}
+	exprs := strings.Split(selector.String(), ",")
+	for _, expr := range exprs {
+		parts := strings.Split(expr, "=")
+		if len(parts) != 2 {
+			return nil, fmt.Errorf("invalid selector expression: %s", expr)
+		}
+		selectorMap[parts[0]] = parts[1]
+	}
+
+	return selectorMap, nil
 }

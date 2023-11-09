@@ -37,6 +37,9 @@ storageClient:
         # values for these.
         - name: testmetric
           target: 70
+          selector:
+            # internal selector used specifically by sim metrics and scaler.
+            AUTOSCALER_NAME: testauto1
 # metricsClient provides an adapter for reading metrics values.
 metricsClient:
   # sim is a metricsClient and scalingClient that can be used to simulate scaling

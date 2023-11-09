@@ -42,10 +42,9 @@ func TestMetricsSimSimple(t *testing.T) {
 	require.NoError(t, err)
 	sim := client.(*metricsSim)
 
-	values, _, err := client.GetMetric(context.Background(), t.Name(), "testnamespace", t.Name())
-	require.NoError(t, err)
-	// expecting empty values since we have no scale
-	require.Len(t, values, 0)
+	selector := map[string]string{
+		proto.SimMetricsConfig_AUTOSCALER_NAME.String(): t.Name(),
+	}
 
 	err = sim.SetScaleTarget(
 		context.Background(),
@@ -53,23 +52,23 @@ func TestMetricsSimSimple(t *testing.T) {
 		"testnamespace",
 		&prototypes.ScaleSpec{Desired: 1})
 	require.NoError(t, err)
-	values, _, err = client.GetMetric(context.Background(), t.Name(), "testnamespace", t.Name())
+	values, _, err := client.GetMetric(context.Background(), t.Name(), "testnamespace", selector)
 	require.NoError(t, err)
 	require.Len(t, values, 1)
 	// 200%
-	require.EqualValues(t, 200, values[0])
+	require.EqualValues(t, 200000, values[0])
 	time.Sleep(100 * time.Millisecond)
-	values, _, err = client.GetMetric(context.Background(), t.Name(), "testnamespace", t.Name())
+	values, _, err = client.GetMetric(context.Background(), t.Name(), "testnamespace", selector)
 	require.NoError(t, err)
 	require.Len(t, values, 1)
 	// 400%
-	require.EqualValues(t, 400, values[0])
+	require.EqualValues(t, 400000, values[0])
 
 	// back from the start
 	time.Sleep(200 * time.Millisecond)
-	values, _, err = client.GetMetric(context.Background(), t.Name(), "testnamespace", t.Name())
+	values, _, err = client.GetMetric(context.Background(), t.Name(), "testnamespace", selector)
 	require.NoError(t, err)
 	require.Len(t, values, 1)
 	// 200%
-	require.EqualValues(t, 200, values[0])
+	require.EqualValues(t, 200000, values[0])
 }

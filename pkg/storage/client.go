@@ -215,8 +215,10 @@ func autoscalerToHPA(autoscaler *prototypes.Autoscaler) (*v2.HorizontalPodAutosc
 			Type: v2.ExternalMetricSourceType,
 			External: &v2.ExternalMetricSource{
 				Metric: v2.MetricIdentifier{
-					Name:     metric.Name,
-					Selector: EncodeMetricHPA(autoscaler.Name),
+					Name: metric.Name,
+					Selector: &v1.LabelSelector{
+						MatchLabels: metric.Selector,
+					},
 				},
 				Target: v2.MetricTarget{
 					Type:  v2.ValueMetricType,

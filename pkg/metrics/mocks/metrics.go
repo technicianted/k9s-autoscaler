@@ -36,9 +36,9 @@ func (m *MockMetricsClient) EXPECT() *MockMetricsClientMockRecorder {
 }
 
 // GetMetric mocks base method.
-func (m *MockMetricsClient) GetMetric(ctx context.Context, autoscaler, namespace, metricName string) ([]int64, time.Time, error) {
+func (m *MockMetricsClient) GetMetric(ctx context.Context, metricName, namespace string, selector map[string]string) ([]int64, time.Time, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetMetric", ctx, autoscaler, namespace, metricName)
+	ret := m.ctrl.Call(m, "GetMetric", ctx, metricName, namespace, selector)
 	ret0, _ := ret[0].([]int64)
 	ret1, _ := ret[1].(time.Time)
 	ret2, _ := ret[2].(error)
@@ -46,7 +46,7 @@ func (m *MockMetricsClient) GetMetric(ctx context.Context, autoscaler, namespace
 }
 
 // GetMetric indicates an expected call of GetMetric.
-func (mr *MockMetricsClientMockRecorder) GetMetric(ctx, autoscaler, namespace, metricName interface{}) *gomock.Call {
+func (mr *MockMetricsClientMockRecorder) GetMetric(ctx, metricName, namespace, selector interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMetric", reflect.TypeOf((*MockMetricsClient)(nil).GetMetric), ctx, autoscaler, namespace, metricName)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMetric", reflect.TypeOf((*MockMetricsClient)(nil).GetMetric), ctx, metricName, namespace, selector)
 }

@@ -105,7 +105,8 @@ func (s *metricsSim) ScalingClient(config *anypb.Any) (scalingtypes.ScalingClien
 	return simSingleton, nil
 }
 
-func (s *metricsSim) GetMetric(ctx context.Context, autoscaler, namespace, metricName string) ([]int64, time.Time, error) {
+func (s *metricsSim) GetMetric(ctx context.Context, metricName, namespace string, selector map[string]string) ([]int64, time.Time, error) {
+	autoscaler := selector[proto.SimMetricsConfig_AUTOSCALER_NAME.String()]
 	if metricName != s.config.MetricName {
 		return nil, time.Time{}, fmt.Errorf("invalid metric name: %s != %s", metricName, s.config.MetricName)
 	}

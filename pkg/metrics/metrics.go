@@ -22,5 +22,5 @@ var (
 			Help:      "Time to get value of a metric.",
 			Buckets:   prometheus.ExponentialBucketsRange(0.001, 5.0, 10),
 		},
-		[]string{common.MetricsAutoscaleNameLabel, common.MetricsAutoscalerNamespaceLabel, metricNameLabel, common.MetricsErrorLabel})
+		[]string{common.MetricsAutoscalerNamespaceLabel, metricNameLabel, common.MetricsErrorLabel})
 )

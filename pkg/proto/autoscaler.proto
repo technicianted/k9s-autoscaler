@@ -19,6 +19,8 @@ message Metric {
     string name = 1;
 	// Target absolute value.
     int64 target = 2;
+	// Selector key/value pairs to be passed to client.
+	map<string,string> selector = 3;
 }
 
 // Define the autoscaler scaling policy.
