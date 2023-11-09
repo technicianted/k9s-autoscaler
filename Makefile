@@ -49,24 +49,5 @@ deps:
 go-gen: deps
 	go generate ./...
 
-protos: deps
-	protoc \
-		--go_opt=paths=source_relative \
-		--plugin=$(PROTOCPATH)/protoc-gen-go \
-		--plugin=$(PROTOCPATH)/protoc-gen-go-grpc \
-		-I pkg/proto/ pkg/proto/autoscaler.proto \
-		--go_out=pkg/proto/ \
-		--go-grpc_out=pkg/proto/
-	protoc \
-		--go_opt=paths=source_relative \
-		--plugin=$(PROTOCPATH)/protoc-gen-go \
-		-I . -I pkg/providers/proto pkg/providers/proto/configs.proto \
-		--go_out=.
-	protoc \
-		--go_opt=paths=source_relative \
-		--plugin=$(PROTOCPATH)/protoc-gen-go \
-		-I . -I pkg/cmd/proto pkg/cmd/proto/config.proto \
-		--go_out=.
-
 binaries: fmt vet
 	$(GO_BUILD_VARS) go build -ldflags "-X k9s-autoscaler/pkg/version.Build=$(BUILD_VERSION)" -o bin/k9s-autoscaler ./cmd/k9s-autoscaler/
