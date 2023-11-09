@@ -13,14 +13,10 @@ import (
 	"google.golang.org/protobuf/types/known/anypb"
 )
 
-const (
-	ProviderName = "inline"
-)
-
 type inlineStorage struct{}
 
 func init() {
-	providers.RegisterStorageClient(ProviderName, &inlineStorage{})
+	providers.RegisterStorageClient(&proto.InlineStorageConfig{}, &inlineStorage{})
 }
 
 // Inline storage provider defines a provider that reads autoscaler configurations

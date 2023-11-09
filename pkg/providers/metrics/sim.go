@@ -18,10 +18,6 @@ import (
 	"k8s.io/klog/v2"
 )
 
-const (
-	SimProviderName = "sim"
-)
-
 var (
 	simSingleton *metricsSim = nil
 )
@@ -44,8 +40,8 @@ type metricsSim struct {
 }
 
 func init() {
-	providers.RegisterMetricsClient(SimProviderName, &metricsSim{})
-	providers.RegisterScalingClient(SimProviderName, &metricsSim{})
+	providers.RegisterMetricsClient(&proto.SimMetricsConfig{}, &metricsSim{})
+	providers.RegisterScalingClient(&proto.SimMetricsConfig{}, &metricsSim{})
 }
 
 func (s *metricsSim) MetricsClient(config *anypb.Any) (metricstypes.MetricsClient, error) {

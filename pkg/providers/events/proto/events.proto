@@ -1,0 +1,10 @@
+// Copyright (c) technicianted. All rights reserved.
+// Licensed under the MIT License.
+syntax = "proto3";
+
+package k9sautoscaler.providers.events.proto;
+
+option go_package = "k9s-autoscaler/pkg/providers/events/proto;proto";
+
+message KLog {
+}

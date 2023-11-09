@@ -4,9 +4,11 @@ package events
 
 import (
 	"context"
+
 	eventstypes "k9s-autoscaler/pkg/events/types"
 	prototypes "k9s-autoscaler/pkg/proto"
 	"k9s-autoscaler/pkg/providers"
+	"k9s-autoscaler/pkg/providers/events/proto"
 
 	"google.golang.org/protobuf/types/known/anypb"
 	"k8s.io/klog/v2"
@@ -20,7 +22,7 @@ const (
 type klogClient struct{}
 
 func init() {
-	providers.RegisterEventsClient(KLogProviderName, &klogClient{})
+	providers.RegisterEventsClient(&proto.KLog{}, &klogClient{})
 }
 
 func (e *klogClient) EventsClient(config *anypb.Any) (eventstypes.EventCreator, error) {

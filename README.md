@@ -24,7 +24,6 @@ Sample configuration:
 storageClient:
   # inline is a built-in storage client that uses in-line yaml configuration
   # for autoscalers.
-  name: inline
   config:
     "@type": type.googleapis.com/k9sautoscaler.providers.storage.proto.InlineStorageConfig
     autoscalers:
@@ -43,7 +42,6 @@ metricsClient:
   # sim is a metricsClient and scalingClient that can be used to simulate scaling
   # and metrics reading based on predefined time intervals.
   # it returns a metric based on average simulated load percentage.
-  name: sim
   config:
     "@type": type.googleapis.com/k9sautoscaler.providers.metrics.proto.SimMetricsConfig
     metricName: testmetric
@@ -66,11 +64,13 @@ metricsClient:
 # scalingClient provides an adapter for getting and setting scale.
 scalingClient:
   # sim is a scalingClient that works with sim metrics client.
-  name: sim
+  config:
+    "@type": type.googleapis.com/k9sautoscaler.providers.metrics.proto.SimMetricsConfig
 # eventsClient provides an adapter for the autoscaler events.
 eventsClient:
   # klog logs status updates to klogger.
-  name: klog
+  config:
+    "@type": type.googleapis.com/k9sautoscaler.providers.events.proto.KLog
 # run the autoscaler sync loop every 5s. in a production setup a typical value
 # is 15s.
 resyncPeriod: 5s

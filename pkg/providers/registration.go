@@ -11,6 +11,7 @@ import (
 	scalingtypes "k9s-autoscaler/pkg/scale/types"
 	"k9s-autoscaler/pkg/storage"
 
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
 )
 
@@ -49,10 +50,12 @@ var (
 	eventsClientFactories  = make(map[string]EventsClientFactory)
 )
 
-// Registers a storage client provider adapter with name and factory.
-func RegisterStorageClient(name string, factory StorageClientFactory) {
+// Registers a storage client provider adapter with configMEssage and factory.
+// configMessage type will be used for identification.
+func RegisterStorageClient(configMessage proto.Message, factory StorageClientFactory) {
+	name := typeNameForMessage(configMessage)
 	if _, ok := storageClientFactories[name]; ok {
-		panic(fmt.Sprintf("storage client %s already registered", name))
+		panic(fmt.Sprintf("storage provider %s already registered", name))
 	}
 
 	storageClientFactories[name] = factory
@@ -61,15 +64,18 @@ func RegisterStorageClient(name string, factory StorageClientFactory) {
 // Instantiates a new storage client with config. Name in config is used to lookup
 // previously registerd factory.
 func StorageClient(config *configproto.ProviderConfig) (*storage.Client, error) {
-	if f, ok := storageClientFactories[config.Name]; !ok {
-		return nil, fmt.Errorf("no storage client registered for %s", config.Name)
+	name := config.Config.TypeUrl
+	fmt.Printf("type: %+v\n", config.Config)
+	if f, ok := storageClientFactories[name]; !ok {
+		return nil, fmt.Errorf("no storage client registered for %s", name)
 	} else {
 		return f.StorageClient(config.Config)
 	}
 }
 
 // Registers a storage client provider adapter with name and factory.
-func RegisterMetricsClient(name string, factory MetricsClientFactory) {
+func RegisterMetricsClient(configMessage proto.Message, factory MetricsClientFactory) {
+	name := typeNameForMessage(configMessage)
 	if _, ok := metricClientFactories[name]; ok {
 		panic(fmt.Sprintf("metrics client %s already registered", name))
 	}
@@ -80,15 +86,17 @@ func RegisterMetricsClient(name string, factory MetricsClientFactory) {
 // Get a storage client with config. Name in config is used to lookup
 // previously registerd factory.
 func MetricsClient(config *configproto.ProviderConfig) (metricstypes.MetricsClient, error) {
-	if f, ok := metricClientFactories[config.Name]; !ok {
-		return nil, fmt.Errorf("no metrics client registered for %s", config.Name)
+	name := config.Config.TypeUrl
+	if f, ok := metricClientFactories[name]; !ok {
+		return nil, fmt.Errorf("no metrics client registered for %s", name)
 	} else {
 		return f.MetricsClient(config.Config)
 	}
 }
 
 // Registers a storage client provider adapter with name and factory.
-func RegisterScalingClient(name string, factory ScalingClientFactory) {
+func RegisterScalingClient(configMessage proto.Message, factory ScalingClientFactory) {
+	name := typeNameForMessage(configMessage)
 	if _, ok := scalingClientFactories[name]; ok {
 		panic(fmt.Sprintf("scaling client %s already registered", name))
 	}
@@ -99,15 +107,17 @@ func RegisterScalingClient(name string, factory ScalingClientFactory) {
 // Gets a scaling client with config. Name in config is used to lookup
 // previously registerd factory.
 func ScalingClient(config *configproto.ProviderConfig) (scalingtypes.ScalingClient, error) {
-	if f, ok := scalingClientFactories[config.Name]; !ok {
-		return nil, fmt.Errorf("no scaling client registered for %s", config.Name)
+	name := config.Config.TypeUrl
+	if f, ok := scalingClientFactories[name]; !ok {
+		return nil, fmt.Errorf("no scaling client registered for %s", name)
 	} else {
 		return f.ScalingClient(config.Config)
 	}
 }
 
 // Registers an events client provider adapter with name and factory.
-func RegisterEventsClient(name string, factory EventsClientFactory) {
+func RegisterEventsClient(configMessage proto.Message, factory EventsClientFactory) {
+	name := typeNameForMessage(configMessage)
 	if _, ok := eventsClientFactories[name]; ok {
 		panic(fmt.Sprintf("events client %s already registered", name))
 	}
@@ -118,9 +128,14 @@ func RegisterEventsClient(name string, factory EventsClientFactory) {
 // Gets an events client with config. Name in config is used to lookup
 // previously registerd factory.
 func EventsClient(config *configproto.ProviderConfig) (eventstypes.EventCreator, error) {
-	if f, ok := eventsClientFactories[config.Name]; !ok {
-		return nil, fmt.Errorf("no events client registered for %s", config.Name)
+	name := config.Config.TypeUrl
+	if f, ok := eventsClientFactories[name]; !ok {
+		return nil, fmt.Errorf("no events client registered for %s", name)
 	} else {
 		return f.EventsClient(config.Config)
 	}
+}
+
+func typeNameForMessage(configMessage proto.Message) string {
+	return "type.googleapis.com/" + string(configMessage.ProtoReflect().Descriptor().FullName())
 }

@@ -27,7 +27,6 @@ func TestProto(t *testing.T) {
 
 	config := ControllerConfig{
 		StorageClient: &proto.ProviderConfig{
-			Name:   "inline",
 			Config: storageAny,
 		},
 		ResyncPeriod: durationpb.New(100 * time.Millisecond),
