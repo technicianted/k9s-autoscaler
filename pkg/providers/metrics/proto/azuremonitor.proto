@@ -1,0 +1,24 @@
+// Copyright (c) technicianted. All rights reserved.
+// Licensed under the MIT License.
+syntax = "proto3";
+
+package k9sautoscaler.providers.metrics.proto;
+
+option go_package = "k9s-autoscaler/pkg/providers/metrics/proto;proto";
+
+// Configuration for Azure Monitor based metrics provider.
+// Authentication is handled using default Azure credential mechanism.
+// See: https://learn.microsoft.com/en-us/azure/developer/go/azure-sdk-authentication
+// It is important that the metrics query returns exactly 1 time series to be usable
+// in autoscaling.
+message AzureMonitorConfig {
+    enum SelectorLabels {
+        // Target Azure resource URI. Required selector.
+        ResourceURI = 0;
+        // Metric Azure namespace. Required selector.
+        MetricNamespace = 1;
+        // Filter values using expressions. Optional selector.
+        Filter = 2;
+    }
+}
+

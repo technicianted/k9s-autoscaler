@@ -9,8 +9,20 @@ K9s Autoscaler is a weekend project to explore the idea of running Kubernetes Ho
 * Build REST HTTP API to discover and configure autoscalers.
 * Fully extensible in and out of tree for storage, metrics and scaling adapters.
 
-#### Project status
+### Project status
 Early stage development.
+
+#### Available storage clients
+* **Inline**: Load autoscaler configurations from a yaml file.
+
+#### Available metrics clients
+* **Sim**: Simulation of dummy metrics for testing.
+* **Azure Monitor**: Read metric values of a resource from Azure Monitor metrics API.
+
+#### Available scalers
+* **Sim**: Simulation of dummy scaling that works with Sim metrics clients to provide proportional scale metrics.
+
+### Current usage
 
 Command line tool is available that runs in-tree clients:
 ```
