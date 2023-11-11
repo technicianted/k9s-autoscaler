@@ -10,7 +10,10 @@ import (
 
 //go:generate mockgen -package mocks -destination ../mocks/scale.go -source $GOFILE
 
+// Scaling client implements a scaling adapter for kubernetes hpa.
 type ScalingClient interface {
-	SetScaleTarget(ctx context.Context, name, namespace string, target *prototypes.ScaleSpec) error
-	GetScale(ctx context.Context, name, namespace string) (*prototypes.Scale, error)
+	// Scales a scaleTarget to given target for autoscaler name and namespace.
+	SetScaleTarget(ctx context.Context, name, namespace string, scaleTarget *prototypes.AutoscalerTarget, target *prototypes.ScaleSpec) error
+	// Gets current scale for scaleTarget for autoscaler name and namespace.
+	GetScale(ctx context.Context, name, namespace string, scaleTarget *prototypes.AutoscalerTarget) (*prototypes.Scale, error)
 }

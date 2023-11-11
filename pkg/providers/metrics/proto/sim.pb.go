@@ -256,6 +256,44 @@ func (x *SimMetricsConfig) GetAutoscalersConfig() []*AutoscalerConfig {
 	return nil
 }
 
+type ScalingTargetConfig struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *ScalingTargetConfig) Reset() {
+	*x = ScalingTargetConfig{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_sim_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ScalingTargetConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ScalingTargetConfig) ProtoMessage() {}
+
+func (x *ScalingTargetConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_sim_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ScalingTargetConfig.ProtoReflect.Descriptor instead.
+func (*ScalingTargetConfig) Descriptor() ([]byte, []int) {
+	return file_sim_proto_rawDescGZIP(), []int{3}
+}
+
 var File_sim_proto protoreflect.FileDescriptor
 
 var file_sim_proto_rawDesc = []byte{
@@ -296,11 +334,12 @@ var file_sim_proto_rawDesc = []byte{
 	0x67, 0x52, 0x11, 0x61, 0x75, 0x74, 0x6f, 0x73, 0x63, 0x61, 0x6c, 0x65, 0x72, 0x73, 0x43, 0x6f,
 	0x6e, 0x66, 0x69, 0x67, 0x22, 0x23, 0x0a, 0x0c, 0x53, 0x65, 0x6c, 0x65, 0x63, 0x74, 0x6f, 0x72,
 	0x4b, 0x65, 0x79, 0x73, 0x12, 0x13, 0x0a, 0x0f, 0x41, 0x55, 0x54, 0x4f, 0x53, 0x43, 0x41, 0x4c,
-	0x45, 0x52, 0x5f, 0x4e, 0x41, 0x4d, 0x45, 0x10, 0x00, 0x42, 0x31, 0x5a, 0x2f, 0x6b, 0x39, 0x73,
-	0x2d, 0x61, 0x75, 0x74, 0x6f, 0x73, 0x63, 0x61, 0x6c, 0x65, 0x72, 0x2f, 0x70, 0x6b, 0x67, 0x2f,
-	0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x73, 0x2f, 0x6d, 0x65, 0x72, 0x69, 0x63, 0x73,
-	0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x3b, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x06, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x33,
+	0x45, 0x52, 0x5f, 0x4e, 0x41, 0x4d, 0x45, 0x10, 0x00, 0x22, 0x15, 0x0a, 0x13, 0x53, 0x63, 0x61,
+	0x6c, 0x69, 0x6e, 0x67, 0x54, 0x61, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67,
+	0x42, 0x31, 0x5a, 0x2f, 0x6b, 0x39, 0x73, 0x2d, 0x61, 0x75, 0x74, 0x6f, 0x73, 0x63, 0x61, 0x6c,
+	0x65, 0x72, 0x2f, 0x70, 0x6b, 0x67, 0x2f, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x73,
+	0x2f, 0x6d, 0x65, 0x72, 0x69, 0x63, 0x73, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x3b, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -316,16 +355,17 @@ func file_sim_proto_rawDescGZIP() []byte {
 }
 
 var file_sim_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_sim_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_sim_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_sim_proto_goTypes = []interface{}{
 	(SimMetricsConfig_SelectorKeys)(0), // 0: k9sautoscaler.providers.metrics.proto.SimMetricsConfig.SelectorKeys
 	(*MetricLoad)(nil),                 // 1: k9sautoscaler.providers.metrics.proto.MetricLoad
 	(*AutoscalerConfig)(nil),           // 2: k9sautoscaler.providers.metrics.proto.AutoscalerConfig
 	(*SimMetricsConfig)(nil),           // 3: k9sautoscaler.providers.metrics.proto.SimMetricsConfig
-	(*durationpb.Duration)(nil),        // 4: google.protobuf.Duration
+	(*ScalingTargetConfig)(nil),        // 4: k9sautoscaler.providers.metrics.proto.ScalingTargetConfig
+	(*durationpb.Duration)(nil),        // 5: google.protobuf.Duration
 }
 var file_sim_proto_depIdxs = []int32{
-	4, // 0: k9sautoscaler.providers.metrics.proto.MetricLoad.timespan:type_name -> google.protobuf.Duration
+	5, // 0: k9sautoscaler.providers.metrics.proto.MetricLoad.timespan:type_name -> google.protobuf.Duration
 	1, // 1: k9sautoscaler.providers.metrics.proto.AutoscalerConfig.load:type_name -> k9sautoscaler.providers.metrics.proto.MetricLoad
 	2, // 2: k9sautoscaler.providers.metrics.proto.SimMetricsConfig.autoscalers_config:type_name -> k9sautoscaler.providers.metrics.proto.AutoscalerConfig
 	3, // [3:3] is the sub-list for method output_type
@@ -377,6 +417,18 @@ func file_sim_proto_init() {
 				return nil
 			}
 		}
+		file_sim_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ScalingTargetConfig); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -384,7 +436,7 @@ func file_sim_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_sim_proto_rawDesc,
 			NumEnums:      1,
-			NumMessages:   3,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

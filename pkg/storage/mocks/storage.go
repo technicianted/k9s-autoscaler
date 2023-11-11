@@ -11,6 +11,59 @@ import (
 	gomock "github.com/golang/mock/gomock"
 )
 
+// MockAutoscalerGetter is a mock of AutoscalerGetter interface.
+type MockAutoscalerGetter struct {
+	ctrl     *gomock.Controller
+	recorder *MockAutoscalerGetterMockRecorder
+}
+
+// MockAutoscalerGetterMockRecorder is the mock recorder for MockAutoscalerGetter.
+type MockAutoscalerGetterMockRecorder struct {
+	mock *MockAutoscalerGetter
+}
+
+// NewMockAutoscalerGetter creates a new mock instance.
+func NewMockAutoscalerGetter(ctrl *gomock.Controller) *MockAutoscalerGetter {
+	mock := &MockAutoscalerGetter{ctrl: ctrl}
+	mock.recorder = &MockAutoscalerGetterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockAutoscalerGetter) EXPECT() *MockAutoscalerGetterMockRecorder {
+	return m.recorder
+}
+
+// Get mocks base method.
+func (m *MockAutoscalerGetter) Get(name, namespace string) (*proto.Autoscaler, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Get", name, namespace)
+	ret0, _ := ret[0].(*proto.Autoscaler)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Get indicates an expected call of Get.
+func (mr *MockAutoscalerGetterMockRecorder) Get(name, namespace interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockAutoscalerGetter)(nil).Get), name, namespace)
+}
+
+// List mocks base method.
+func (m *MockAutoscalerGetter) List() ([]*proto.Autoscaler, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "List")
+	ret0, _ := ret[0].([]*proto.Autoscaler)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// List indicates an expected call of List.
+func (mr *MockAutoscalerGetterMockRecorder) List() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockAutoscalerGetter)(nil).List))
+}
+
 // MockAutoscalerCRUDder is a mock of AutoscalerCRUDder interface.
 type MockAutoscalerCRUDder struct {
 	ctrl     *gomock.Controller
@@ -60,6 +113,21 @@ func (m *MockAutoscalerCRUDder) Delete(name, namespace string) error {
 func (mr *MockAutoscalerCRUDderMockRecorder) Delete(name, namespace interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockAutoscalerCRUDder)(nil).Delete), name, namespace)
+}
+
+// Get mocks base method.
+func (m *MockAutoscalerCRUDder) Get(name, namespace string) (*proto.Autoscaler, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Get", name, namespace)
+	ret0, _ := ret[0].(*proto.Autoscaler)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Get indicates an expected call of Get.
+func (mr *MockAutoscalerCRUDderMockRecorder) Get(name, namespace interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockAutoscalerCRUDder)(nil).Get), name, namespace)
 }
 
 // List mocks base method.

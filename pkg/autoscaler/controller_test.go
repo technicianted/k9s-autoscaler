@@ -26,6 +26,15 @@ func TestAutoscalerControllerNoScale(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
+	autoscalerUpdateMock := storagemocks.NewMockAutoscalerStatusUpdateHandler(mockCtrl)
+	autoscalerUpdateMock.EXPECT().AutoscalerStatusUpdated(gomock.Any()).DoAndReturn(
+		func(autoscaler *prototypes.Autoscaler) {
+			klog.InfoS("status update", "status", autoscaler.Status)
+		}).AnyTimes()
+
+	storageClient, err := storage.NewClient(autoscalerUpdateMock)
+	require.NoError(t, err)
+
 	eventerMock := eventsmocks.NewMockEventCreator(mockCtrl)
 	eventerMock.EXPECT().Create(gomock.Any(), t.Name(), t.Name(), gomock.Any()).DoAndReturn(
 		func(ctx context.Context, name, namespace string, event *prototypes.AutoscalerEvent) error {
@@ -34,9 +43,9 @@ func TestAutoscalerControllerNoScale(t *testing.T) {
 		}).AnyTimes()
 	eventNamespacer := events.NewGetter(eventerMock)
 
-	scalerMock := scalemocks.NewMockScaler(mockCtrl)
-	scaleGetter := scale.NewGetter(scalerMock)
-	scalerMock.EXPECT().GetScale(gomock.Any(), t.Name(), t.Name()).Return(
+	scalerMock := scalemocks.NewMockScalingClient(mockCtrl)
+	scaleGetter := scale.NewGetter(storageClient, scalerMock)
+	scalerMock.EXPECT().GetScale(gomock.Any(), t.Name(), t.Name(), gomock.Any()).Return(
 		&prototypes.Scale{
 			Spec: &prototypes.ScaleSpec{
 				Desired: 1,
@@ -46,7 +55,7 @@ func TestAutoscalerControllerNoScale(t *testing.T) {
 			},
 		},
 		nil).AnyTimes()
-	scalerMock.EXPECT().SetScaleTarget(gomock.Any(), t.Name(), t.Name(), gomock.Any()).DoAndReturn(
+	scalerMock.EXPECT().SetScaleTarget(gomock.Any(), t.Name(), t.Name(), gomock.Any(), gomock.Any()).DoAndReturn(
 		func(ctx context.Context, name, namespace string, target *prototypes.ScaleSpec) error {
 			klog.InfoS("setScaleTarget", "target", target)
 			return nil
@@ -62,14 +71,6 @@ func TestAutoscalerControllerNoScale(t *testing.T) {
 	resyncPeriod := time.Second
 	downscaleStabilisationWindow := 100 * time.Millisecond
 
-	autoscalerUpdateMock := storagemocks.NewMockAutoscalerStatusUpdateHandler(mockCtrl)
-	autoscalerUpdateMock.EXPECT().AutoscalerStatusUpdated(gomock.Any()).DoAndReturn(
-		func(autoscaler *prototypes.Autoscaler) {
-			klog.InfoS("status update", "status", autoscaler.Status)
-		}).AnyTimes()
-
-	storageClient, err := storage.NewClient(autoscalerUpdateMock)
-	require.NoError(t, err)
 	controller := NewController(
 		storageClient,
 		eventNamespacer,

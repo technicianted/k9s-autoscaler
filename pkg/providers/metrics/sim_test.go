@@ -50,6 +50,7 @@ func TestMetricsSimSimple(t *testing.T) {
 		context.Background(),
 		t.Name(),
 		"testnamespace",
+		&prototypes.AutoscalerTarget{},
 		&prototypes.ScaleSpec{Desired: 1})
 	require.NoError(t, err)
 	values, _, err := client.GetMetric(context.Background(), t.Name(), "testnamespace", selector)

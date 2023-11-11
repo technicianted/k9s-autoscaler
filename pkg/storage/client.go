@@ -82,6 +82,20 @@ func (c *Client) List() ([]*prototypes.Autoscaler, error) {
 	return autoscalers, nil
 }
 
+// Get an autoscaler by name and namespace.
+func (c *Client) Get(name, namespace string) (*prototypes.Autoscaler, error) {
+	c.RLock()
+	defer c.RUnlock()
+
+	if autoscalersByName, ok := c.autoscalerByNamespaceName[namespace]; ok {
+		if autoscaler, ok := autoscalersByName[name]; ok {
+			return autoscaler.autoscaler, nil
+		}
+	}
+
+	return nil, fmt.Errorf("autoscaler %s namespace %s not found", name, namespace)
+}
+
 // Adds a new autoscaler. All defined k8s watches will be notified.
 // Implements AutoscalerCRUDder.
 func (c *Client) Add(autoscaler *prototypes.Autoscaler) error {

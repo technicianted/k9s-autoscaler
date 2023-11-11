@@ -7,6 +7,7 @@ package k9sautoscaler.proto;
 option go_package = "k9s-autoscaler/pkg/proto;proto";
 
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/any.proto";
 
 // This files contains proto message definitions for internal/core k9s autoscaler
 // objects. Generally they are a subset of k8s HPA.
@@ -114,6 +115,10 @@ message Condition {
 	string message = 5;
 }
 
+message AutoscalerTarget {
+	google.protobuf.Any config = 1;
+}
+
 // Defines k9s autoscaler specs. These are a subset of k8s HPA specs.
 message AutoscalerSpec {
 	// Minimum scale.
@@ -125,6 +130,7 @@ message AutoscalerSpec {
 	// Autoscaler behaviour.
 	// see: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#configurable-scaling-behavior
 	optional Behavior behavior = 4;
+	AutoscalerTarget target = 5;
 }
 
 // Defines k9s autoscaler status. These are a subset of k8s HPA status.

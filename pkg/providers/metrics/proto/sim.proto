@@ -36,3 +36,7 @@ message SimMetricsConfig {
     string metric_name = 1;
     repeated AutoscalerConfig autoscalers_config = 2; 
 }
+
+// Dummy scaling target config. Not used for this provider.
+message ScalingTargetConfig {
+}

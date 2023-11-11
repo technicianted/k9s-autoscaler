@@ -21,6 +21,7 @@ Early stage development.
 
 #### Available scalers
 * **Sim**: Simulation of dummy scaling that works with Sim metrics clients to provide proportional scale metrics.
+* **Azure Cognitive Services**: Scales an Azure Cognitive Services resource targetting a specific deployment.
 
 ### Current usage
 

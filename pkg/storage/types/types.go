@@ -12,12 +12,18 @@ const (
 	ScaleResrouceKind       = ""
 )
 
+type AutoscalerGetter interface {
+	// Get a list of defiend autosclaers.
+	List() ([]*prototypes.Autoscaler, error)
+	// Get an autoscaler by name and namespace.
+	Get(name, namespace string) (*prototypes.Autoscaler, error)
+}
+
 // An interface to abstract CRUD operations for autoscalers. It can be used
 // by storage providers to adapt to external APIs.
 // All calls are expected to return from local cache and are nonblocking.
 type AutoscalerCRUDder interface {
-	// Get a list of defiend autosclaers.
-	List() ([]*prototypes.Autoscaler, error)
+	AutoscalerGetter
 	// Add new new autoscaler. Returns an error of already exists.
 	Add(autoscaler *prototypes.Autoscaler) error
 	// Updates an autoscaler. Returns an error if not exists.

@@ -121,7 +121,7 @@ func NewControllerFromConfigs(configs *configproto.ControllerConfig) (autoscaler
 	controller := autoscaler.NewController(
 		storageClient,
 		events.NewGetter(eventsCreator),
-		scale.NewGetter(scalingClient),
+		scale.NewGetter(storageClient, scalingClient),
 		metrics.NewClient(metricsClient),
 		configs.ResyncPeriod.AsDuration(),
 		configs.DownscaleStabilizationWindow.AsDuration(),

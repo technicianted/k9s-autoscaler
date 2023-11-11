@@ -1,0 +1,23 @@
+// Copyright (c) technicianted. All rights reserved.
+// Licensed under the MIT License.
+syntax = "proto3";
+
+package k9sautoscaler.providers.scaling.proto;
+
+option go_package = "k9s-autoscaler/pkg/providers/scaling/proto;proto";
+
+// Target config for an Azure Cognitive Services deployment.
+message AzureDeploymentTargetConfig {
+    // Full Azure resource URI for scaling.
+    string ResourceURI = 1;
+    // Deployment name to target for scaling.
+    string DeploymentName = 2;
+}
+
+// Azure Cognitive Services deployment scaler configuration.
+// Depending on the type of scaling operation, if update operation is used,
+// it may take as long as a few minutes to complete. Make sure that you both
+// have the autoscaler controller run multiple workers, and set the correct
+// behavior accordingly.
+message AzureDeploymentConfig {
+}

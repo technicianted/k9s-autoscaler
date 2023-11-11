@@ -41,7 +41,7 @@ type metricsSim struct {
 
 func init() {
 	providers.RegisterMetricsClient(&proto.SimMetricsConfig{}, &metricsSim{})
-	providers.RegisterScalingClient(&proto.SimMetricsConfig{}, &metricsSim{})
+	providers.RegisterScalingClient(&proto.SimMetricsConfig{}, &proto.ScalingTargetConfig{}, &metricsSim{})
 }
 
 func (s *metricsSim) MetricsClient(config *anypb.Any) (metricstypes.MetricsClient, error) {
@@ -147,7 +147,7 @@ func (s *metricsSim) GetMetric(ctx context.Context, metricName, namespace string
 	return nil, time.Time{}, fmt.Errorf("autoscaler %s namespace %s not found", autoscaler, namespace)
 }
 
-func (s *metricsSim) SetScaleTarget(ctx context.Context, name, namespace string, target *prototypes.ScaleSpec) error {
+func (s *metricsSim) SetScaleTarget(ctx context.Context, name, namespace string, scaleTarget *prototypes.AutoscalerTarget, target *prototypes.ScaleSpec) error {
 	var state *autoscalerState
 	if autoscalers, ok := s.autoscalerStateByNamespaceByName[namespace]; !ok {
 		return fmt.Errorf("no autoscaler found namespace %s", namespace)
@@ -160,7 +160,7 @@ func (s *metricsSim) SetScaleTarget(ctx context.Context, name, namespace string,
 	return nil
 }
 
-func (s *metricsSim) GetScale(ctx context.Context, name, namespace string) (*prototypes.Scale, error) {
+func (s *metricsSim) GetScale(ctx context.Context, name, namespace string, scaleTarget *prototypes.AutoscalerTarget) (*prototypes.Scale, error) {
 	var state *autoscalerState
 	if autoscalers, ok := s.autoscalerStateByNamespaceByName[namespace]; !ok {
 		return nil, fmt.Errorf("no autoscaler found namespace %s", namespace)

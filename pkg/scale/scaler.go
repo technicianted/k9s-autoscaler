@@ -11,6 +11,7 @@ import (
 
 	prototypes "k9s-autoscaler/pkg/proto"
 	"k9s-autoscaler/pkg/scale/types"
+	storagetypes "k9s-autoscaler/pkg/storage/types"
 
 	autoscalingapi "k8s.io/api/autoscaling/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -26,15 +27,17 @@ import (
 type scaler struct {
 	scale.ScaleInterface
 
-	namespace string
-	scaler    types.ScalingClient
+	namespace        string
+	autoscalerGetter storagetypes.AutoscalerGetter
+	scaler           types.ScalingClient
 }
 
 // Create a new scaler adapter for namespace that uses s to pass scaling calls.
-func NewScaler(namespace string, s types.ScalingClient) scale.ScaleInterface {
+func NewScaler(namespace string, autoscalerGetter storagetypes.AutoscalerGetter, s types.ScalingClient) scale.ScaleInterface {
 	return &scaler{
-		namespace: namespace,
-		scaler:    s,
+		namespace:        namespace,
+		autoscalerGetter: autoscalerGetter,
+		scaler:           s,
 	}
 }
 
@@ -42,8 +45,13 @@ func NewScaler(namespace string, s types.ScalingClient) scale.ScaleInterface {
 func (s *scaler) Get(ctx context.Context, resource schema.GroupResource, name string, opts metav1.GetOptions) (*autoscalingapi.Scale, error) {
 	klog.V(1).InfoS("get scale", "name", name)
 
+	as, err := s.autoscalerGetter.Get(name, s.namespace)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get autoscaler: %v", err)
+	}
+
 	opTimer := time.Now()
-	scale, err := s.scaler.GetScale(ctx, name, s.namespace)
+	scale, err := s.scaler.GetScale(ctx, name, s.namespace, as.Spec.Target)
 	if err != nil {
 		scaleLatencyMetric.WithLabelValues(name, s.namespace, opGet, "true").Observe(time.Since(opTimer).Seconds())
 		return nil, err
@@ -97,10 +105,16 @@ func (s *scaler) Get(ctx context.Context, resource schema.GroupResource, name st
 func (s *scaler) Update(ctx context.Context, resource schema.GroupResource, scale *autoscalingapi.Scale, opts metav1.UpdateOptions) (*autoscalingapi.Scale, error) {
 	klog.V(1).InfoS("update scale", "name", scale.Name, "target", scale.Spec.Replicas)
 
-	err := s.scaler.SetScaleTarget(
+	as, err := s.autoscalerGetter.Get(scale.Name, s.namespace)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get autoscaler: %v", err)
+	}
+
+	err = s.scaler.SetScaleTarget(
 		ctx,
 		scale.Name,
 		s.namespace,
+		as.Spec.Target,
 		&prototypes.ScaleSpec{
 			Desired: scale.Spec.Replicas,
 		})

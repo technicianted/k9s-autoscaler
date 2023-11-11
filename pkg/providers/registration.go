@@ -48,6 +48,9 @@ var (
 	metricClientFactories  = make(map[string]MetricsClientFactory)
 	scalingClientFactories = make(map[string]ScalingClientFactory)
 	eventsClientFactories  = make(map[string]EventsClientFactory)
+
+	scalingClients                      = make(map[string]scalingtypes.ScalingClient)
+	scalingClientFactoryByTargetConfigs = make(map[string]string)
 )
 
 // Registers a storage client provider adapter with configMEssage and factory.
@@ -94,14 +97,18 @@ func MetricsClient(config *configproto.ProviderConfig) (metricstypes.MetricsClie
 	}
 }
 
-// Registers a storage client provider adapter with name and factory.
-func RegisterScalingClient(configMessage proto.Message, factory ScalingClientFactory) {
+// Registers a storage client provider adapter with config and targetConfig and factory.
+func RegisterScalingClient(configMessage proto.Message, targetConfigMessage proto.Message, factory ScalingClientFactory) {
 	name := typeNameForMessage(configMessage)
 	if _, ok := scalingClientFactories[name]; ok {
 		panic(fmt.Sprintf("scaling client %s already registered", name))
 	}
-
+	targetName := typeNameForMessage(targetConfigMessage)
+	if _, ok := scalingClientFactoryByTargetConfigs[targetName]; ok {
+		panic(fmt.Sprintf("scaling client target config %s already registered", targetName))
+	}
 	scalingClientFactories[name] = factory
+	scalingClientFactoryByTargetConfigs[targetName] = name
 }
 
 // Gets a scaling client with config. Name in config is used to lookup
@@ -113,6 +120,21 @@ func ScalingClient(config *configproto.ProviderConfig) (scalingtypes.ScalingClie
 	} else {
 		return f.ScalingClient(config.Config)
 	}
+}
+
+// Gets a scaling client from a scaling target configuration.
+func ScalingClientByTargetConfig(config *anypb.Any) (scalingtypes.ScalingClient, error) {
+	name := config.TypeUrl
+	clientName, ok := scalingClientFactoryByTargetConfigs[name]
+	if !ok {
+		return nil, fmt.Errorf("no scaling client registered for %s", name)
+	}
+	client, ok := scalingClients[clientName]
+	if !ok {
+		return nil, fmt.Errorf("client %s for target %s not configured", clientName, name)
+	}
+
+	return client, nil
 }
 
 // Registers an events client provider adapter with name and factory.

@@ -55,8 +55,10 @@ replace k8s.io/sample-cli-plugin => k8s.io/sample-cli-plugin v0.27.6
 replace k8s.io/sample-controller => k8s.io/sample-controller v0.27.6
 
 require (
+	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.8.0
 	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.4.0
 	github.com/Azure/azure-sdk-for-go/sdk/monitor/azquery v1.1.0
+	github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/cognitiveservices/armcognitiveservices v1.5.0
 	github.com/golang/mock v1.6.0
 	github.com/prometheus/client_golang v1.14.0
 	github.com/spf13/cobra v1.6.0
@@ -72,7 +74,6 @@ require (
 )
 
 require (
-	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.8.0 // indirect
 	github.com/Azure/azure-sdk-for-go/sdk/internal v1.3.0 // indirect
 	github.com/AzureAD/microsoft-authentication-library-for-go v1.1.1 // indirect
 	github.com/NYTimes/gziphandler v1.1.1 // indirect

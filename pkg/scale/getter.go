@@ -4,6 +4,7 @@ package scale
 
 import (
 	"k9s-autoscaler/pkg/scale/types"
+	storagetypes "k9s-autoscaler/pkg/storage/types"
 
 	"k8s.io/client-go/scale"
 )
@@ -14,15 +15,17 @@ var (
 
 // Simple adapter for k8s ScalingClient.
 type getter struct {
-	scaler types.ScalingClient
+	autoscalerGetter storagetypes.AutoscalerGetter
+	scaler           types.ScalingClient
 }
 
-func NewGetter(scaler types.ScalingClient) scale.ScalesGetter {
+func NewGetter(autoscalerGetter storagetypes.AutoscalerGetter, scaler types.ScalingClient) scale.ScalesGetter {
 	return &getter{
-		scaler: scaler,
+		autoscalerGetter: autoscalerGetter,
+		scaler:           scaler,
 	}
 }
 
 func (g *getter) Scales(namespace string) scale.ScaleInterface {
-	return NewScaler(namespace, g.scaler)
+	return NewScaler(namespace, g.autoscalerGetter, g.scaler)
 }
