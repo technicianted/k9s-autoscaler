@@ -229,10 +229,8 @@ func autoscalerToHPA(autoscaler *prototypes.Autoscaler) (*v2.HorizontalPodAutosc
 			Type: v2.ExternalMetricSourceType,
 			External: &v2.ExternalMetricSource{
 				Metric: v2.MetricIdentifier{
-					Name: metric.Name,
-					Selector: &v1.LabelSelector{
-						MatchLabels: metric.Selector,
-					},
+					Name:     metric.Name,
+					Selector: EncodeMetricHPA(autoscaler.Name),
 				},
 				Target: v2.MetricTarget{
 					Type:  v2.ValueMetricType,
@@ -301,24 +299,26 @@ func autoscalerScalingRulesToHPA(rules *prototypes.ScalingRules) (*v2.HPAScaling
 		StabilizationWindowSeconds: rules.StabilizationWindowSeconds,
 	}
 
-	if rules.SelectPolicy != nil {
-		var policy v2.ScalingPolicySelect
-		switch *rules.SelectPolicy {
-		case prototypes.ScalingRules_Max:
-			policy = v2.MaxChangePolicySelect
-		case prototypes.ScalingRules_Min:
-			policy = v2.MinChangePolicySelect
-		case prototypes.ScalingRules_Disabled:
-			policy = v2.DisabledPolicySelect
-		default:
-			return nil, fmt.Errorf("unexpected scaling policy: %v", *rules.SelectPolicy)
-		}
-		hpaRules.SelectPolicy = &policy
+	var policy v2.ScalingPolicySelect
+	switch rules.SelectPolicy {
+	case prototypes.ScalingRules_Max:
+		policy = v2.MaxChangePolicySelect
+	case prototypes.ScalingRules_Min:
+		policy = v2.MinChangePolicySelect
+	case prototypes.ScalingRules_Disabled:
+		policy = v2.DisabledPolicySelect
+	default:
+		return nil, fmt.Errorf("unexpected scaling policy: %v", rules.SelectPolicy)
 	}
+	hpaRules.SelectPolicy = &policy
 
 	for _, rule := range rules.Policies {
+		valueType := v2.PercentScalingPolicy
+		if rule.ValueType == prototypes.ScalingPolicy_Units {
+			valueType = v2.PodsScalingPolicy
+		}
 		hpaRules.Policies = append(hpaRules.Policies, v2.HPAScalingPolicy{
-			Type:          v2.PodsScalingPolicy,
+			Type:          valueType,
 			Value:         rule.Value,
 			PeriodSeconds: rule.PeriodSeconds,
 		})

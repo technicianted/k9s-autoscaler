@@ -110,6 +110,8 @@ func (s *scaler) Update(ctx context.Context, resource schema.GroupResource, scal
 		return nil, fmt.Errorf("failed to get autoscaler: %v", err)
 	}
 
+	opTimer := time.Now()
+
 	err = s.scaler.SetScaleTarget(
 		ctx,
 		scale.Name,
@@ -119,8 +121,10 @@ func (s *scaler) Update(ctx context.Context, resource schema.GroupResource, scal
 			Desired: scale.Spec.Replicas,
 		})
 	if err != nil {
+		scaleLatencyMetric.WithLabelValues(scale.Name, s.namespace, opSet, "true").Observe(time.Since(opTimer).Seconds())
 		return nil, err
 	}
+	scaleLatencyMetric.WithLabelValues(scale.Name, s.namespace, opSet, "").Observe(time.Since(opTimer).Seconds())
 
 	return scale, nil
 }

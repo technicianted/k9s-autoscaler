@@ -13,6 +13,7 @@ import (
 
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
+	"k8s.io/klog/v2"
 )
 
 // Defines a registration of a factory of storage clients.
@@ -109,6 +110,8 @@ func RegisterScalingClient(configMessage proto.Message, targetConfigMessage prot
 	}
 	scalingClientFactories[name] = factory
 	scalingClientFactoryByTargetConfigs[targetName] = name
+
+	klog.V(1).InfoS("registered scaling provider", "configType", name, "targetScalingType", targetName)
 }
 
 // Gets a scaling client with config. Name in config is used to lookup

@@ -20,7 +20,7 @@ var (
 			Subsystem: "scale",
 			Name:      "op_latency",
 			Help:      "Time to make a scale operation.",
-			Buckets:   prometheus.ExponentialBucketsRange(0.001, 5.0, 10),
+			Buckets:   prometheus.ExponentialBucketsRange(0.001, 60.0, 16),
 		},
 		[]string{common.MetricsAutoscaleNameLabel, common.MetricsAutoscalerNamespaceLabel, opLabel, common.MetricsErrorLabel})
 )

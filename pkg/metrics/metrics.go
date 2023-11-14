@@ -20,7 +20,7 @@ var (
 			Subsystem: "metrics",
 			Name:      "get_latency",
 			Help:      "Time to get value of a metric.",
-			Buckets:   prometheus.ExponentialBucketsRange(0.001, 5.0, 10),
+			Buckets:   prometheus.ExponentialBucketsRange(0.001, 60.0, 16),
 		},
 		[]string{common.MetricsAutoscalerNamespaceLabel, metricNameLabel, common.MetricsErrorLabel})
 )

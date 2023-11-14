@@ -9,12 +9,15 @@ option go_package = "k9s-autoscaler/pkg/providers/scaling/proto;proto";
 // Target config for an Azure Cognitive Services deployment.
 message AzureDeploymentTargetConfig {
     // Full Azure resource URI for scaling.
-    string ResourceURI = 1;
+    string resourceURI = 1;
     // Deployment name to target for scaling.
-    string DeploymentName = 2;
+    string deploymentName = 2;
+    optional int32 scaleDenominator = 3;
 }
 
 // Azure Cognitive Services deployment scaler configuration.
+// Authentication is handled using default Azure credential mechanism.
+// See: https://learn.microsoft.com/en-us/azure/developer/go/azure-sdk-authentication
 // Depending on the type of scaling operation, if update operation is used,
 // it may take as long as a few minutes to complete. Make sure that you both
 // have the autoscaler controller run multiple workers, and set the correct

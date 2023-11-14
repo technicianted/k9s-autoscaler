@@ -19,6 +19,7 @@ import (
 
 	_ "k9s-autoscaler/pkg/providers/events"
 	_ "k9s-autoscaler/pkg/providers/metrics"
+	_ "k9s-autoscaler/pkg/providers/scaling"
 	_ "k9s-autoscaler/pkg/providers/storage"
 
 	"google.golang.org/protobuf/encoding/protojson"
@@ -56,7 +57,7 @@ func NewControllerCMD(opts Options) (*ControllerCMD, error) {
 		DownscaleStabilizationWindow: durationpb.New(5 * time.Minute),
 	}
 	if err = protojson.Unmarshal(jsonBytes, &configs); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to process config: %v", err)
 	}
 
 	controller, err := NewControllerFromConfigs(&configs)
@@ -122,7 +123,7 @@ func NewControllerFromConfigs(configs *configproto.ControllerConfig) (autoscaler
 		storageClient,
 		events.NewGetter(eventsCreator),
 		scale.NewGetter(storageClient, scalingClient),
-		metrics.NewClient(metricsClient),
+		metrics.NewClient(storageClient, metricsClient),
 		configs.ResyncPeriod.AsDuration(),
 		configs.DownscaleStabilizationWindow.AsDuration(),
 		configs.Tolerance)

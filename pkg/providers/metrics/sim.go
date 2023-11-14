@@ -33,15 +33,15 @@ type autoscalerState struct {
 // It implements a single metric that returns the average load as a percentage.
 // see pkg/providers/metrics/proto/sim.proto
 type metricsSim struct {
-	config                           *proto.SimMetricsConfig
+	config                           *proto.SimConfig
 	startTime                        time.Time
 	autoscalerStateByNamespaceByName map[string]map[string]*autoscalerState
 	initialized                      bool
 }
 
 func init() {
-	providers.RegisterMetricsClient(&proto.SimMetricsConfig{}, &metricsSim{})
-	providers.RegisterScalingClient(&proto.SimMetricsConfig{}, &proto.ScalingTargetConfig{}, &metricsSim{})
+	providers.RegisterMetricsClient(&proto.SimConfig{}, &metricsSim{})
+	providers.RegisterScalingClient(&proto.SimConfig{}, &proto.SimScalingTargetConfig{}, &metricsSim{})
 }
 
 func (s *metricsSim) MetricsClient(config *anypb.Any) (metricstypes.MetricsClient, error) {
@@ -49,7 +49,7 @@ func (s *metricsSim) MetricsClient(config *anypb.Any) (metricstypes.MetricsClien
 		return s, nil
 	}
 
-	simConfig := proto.SimMetricsConfig{}
+	simConfig := proto.SimConfig{}
 	if err := anypb.UnmarshalTo(config, &simConfig, protob.UnmarshalOptions{}); err != nil {
 		return nil, err
 	}
@@ -105,21 +105,20 @@ func (s *metricsSim) ScalingClient(config *anypb.Any) (scalingtypes.ScalingClien
 	return simSingleton, nil
 }
 
-func (s *metricsSim) GetMetric(ctx context.Context, metricName, namespace string, selector map[string]string) ([]int64, time.Time, error) {
-	autoscaler := selector[proto.SimMetricsConfig_AUTOSCALER_NAME.String()]
+func (s *metricsSim) GetMetric(ctx context.Context, metricName, autoscalerName, namespace string, config *anypb.Any) ([]int64, time.Time, error) {
 	if metricName != s.config.MetricName {
 		return nil, time.Time{}, fmt.Errorf("invalid metric name: %s != %s", metricName, s.config.MetricName)
 	}
 
 	for _, autoscalerConfig := range s.config.AutoscalersConfig {
-		if autoscalerConfig.AutoscalerNamespace != namespace || autoscalerConfig.AutoscalerName != autoscaler {
+		if autoscalerConfig.AutoscalerNamespace != namespace || autoscalerConfig.AutoscalerName != autoscalerName {
 			continue
 		}
 		var state *autoscalerState
 		if autoscalers, ok := s.autoscalerStateByNamespaceByName[namespace]; !ok {
 			return nil, time.Time{}, fmt.Errorf("no autoscaler found namespace %s", namespace)
-		} else if state, ok = autoscalers[autoscaler]; !ok {
-			return nil, time.Time{}, fmt.Errorf("autoscaler not found namespace %s name %s", namespace, autoscaler)
+		} else if state, ok = autoscalers[autoscalerName]; !ok {
+			return nil, time.Time{}, fmt.Errorf("autoscaler not found namespace %s name %s", namespace, autoscalerName)
 		}
 
 		delta := time.Since(s.startTime) % state.totalLoadTimespan
@@ -144,7 +143,7 @@ func (s *metricsSim) GetMetric(ctx context.Context, metricName, namespace string
 		panic("expected to find load")
 	}
 
-	return nil, time.Time{}, fmt.Errorf("autoscaler %s namespace %s not found", autoscaler, namespace)
+	return nil, time.Time{}, fmt.Errorf("autoscaler %s namespace %s not found", autoscalerName, namespace)
 }
 
 func (s *metricsSim) SetScaleTarget(ctx context.Context, name, namespace string, scaleTarget *prototypes.AutoscalerTarget, target *prototypes.ScaleSpec) error {

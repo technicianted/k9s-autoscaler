@@ -24,49 +24,6 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type SimMetricsConfig_SelectorKeys int32
-
-const (
-	SimMetricsConfig_AUTOSCALER_NAME SimMetricsConfig_SelectorKeys = 0
-)
-
-// Enum value maps for SimMetricsConfig_SelectorKeys.
-var (
-	SimMetricsConfig_SelectorKeys_name = map[int32]string{
-		0: "AUTOSCALER_NAME",
-	}
-	SimMetricsConfig_SelectorKeys_value = map[string]int32{
-		"AUTOSCALER_NAME": 0,
-	}
-)
-
-func (x SimMetricsConfig_SelectorKeys) Enum() *SimMetricsConfig_SelectorKeys {
-	p := new(SimMetricsConfig_SelectorKeys)
-	*p = x
-	return p
-}
-
-func (x SimMetricsConfig_SelectorKeys) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
-}
-
-func (SimMetricsConfig_SelectorKeys) Descriptor() protoreflect.EnumDescriptor {
-	return file_sim_proto_enumTypes[0].Descriptor()
-}
-
-func (SimMetricsConfig_SelectorKeys) Type() protoreflect.EnumType {
-	return &file_sim_proto_enumTypes[0]
-}
-
-func (x SimMetricsConfig_SelectorKeys) Number() protoreflect.EnumNumber {
-	return protoreflect.EnumNumber(x)
-}
-
-// Deprecated: Use SimMetricsConfig_SelectorKeys.Descriptor instead.
-func (SimMetricsConfig_SelectorKeys) EnumDescriptor() ([]byte, []int) {
-	return file_sim_proto_rawDescGZIP(), []int{2, 0}
-}
-
 // Define a load entry for a given duration.
 type MetricLoad struct {
 	state         protoimpl.MessageState
@@ -201,7 +158,7 @@ func (x *AutoscalerConfig) GetLoad() []*MetricLoad {
 
 // Simulated metrics config.
 // see: examples/intree/sim.yaml for an example.
-type SimMetricsConfig struct {
+type SimConfig struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -210,8 +167,8 @@ type SimMetricsConfig struct {
 	AutoscalersConfig []*AutoscalerConfig `protobuf:"bytes,2,rep,name=autoscalers_config,json=autoscalersConfig,proto3" json:"autoscalers_config,omitempty"`
 }
 
-func (x *SimMetricsConfig) Reset() {
-	*x = SimMetricsConfig{}
+func (x *SimConfig) Reset() {
+	*x = SimConfig{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_sim_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -219,13 +176,13 @@ func (x *SimMetricsConfig) Reset() {
 	}
 }
 
-func (x *SimMetricsConfig) String() string {
+func (x *SimConfig) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*SimMetricsConfig) ProtoMessage() {}
+func (*SimConfig) ProtoMessage() {}
 
-func (x *SimMetricsConfig) ProtoReflect() protoreflect.Message {
+func (x *SimConfig) ProtoReflect() protoreflect.Message {
 	mi := &file_sim_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -237,33 +194,34 @@ func (x *SimMetricsConfig) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use SimMetricsConfig.ProtoReflect.Descriptor instead.
-func (*SimMetricsConfig) Descriptor() ([]byte, []int) {
+// Deprecated: Use SimConfig.ProtoReflect.Descriptor instead.
+func (*SimConfig) Descriptor() ([]byte, []int) {
 	return file_sim_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *SimMetricsConfig) GetMetricName() string {
+func (x *SimConfig) GetMetricName() string {
 	if x != nil {
 		return x.MetricName
 	}
 	return ""
 }
 
-func (x *SimMetricsConfig) GetAutoscalersConfig() []*AutoscalerConfig {
+func (x *SimConfig) GetAutoscalersConfig() []*AutoscalerConfig {
 	if x != nil {
 		return x.AutoscalersConfig
 	}
 	return nil
 }
 
-type ScalingTargetConfig struct {
+// Autoscaler metric config. Not used.
+type SimMetricConfig struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 }
 
-func (x *ScalingTargetConfig) Reset() {
-	*x = ScalingTargetConfig{}
+func (x *SimMetricConfig) Reset() {
+	*x = SimMetricConfig{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_sim_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -271,13 +229,13 @@ func (x *ScalingTargetConfig) Reset() {
 	}
 }
 
-func (x *ScalingTargetConfig) String() string {
+func (x *SimMetricConfig) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ScalingTargetConfig) ProtoMessage() {}
+func (*SimMetricConfig) ProtoMessage() {}
 
-func (x *ScalingTargetConfig) ProtoReflect() protoreflect.Message {
+func (x *SimMetricConfig) ProtoReflect() protoreflect.Message {
 	mi := &file_sim_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -289,9 +247,48 @@ func (x *ScalingTargetConfig) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ScalingTargetConfig.ProtoReflect.Descriptor instead.
-func (*ScalingTargetConfig) Descriptor() ([]byte, []int) {
+// Deprecated: Use SimMetricConfig.ProtoReflect.Descriptor instead.
+func (*SimMetricConfig) Descriptor() ([]byte, []int) {
 	return file_sim_proto_rawDescGZIP(), []int{3}
+}
+
+// Dummy scaling target config. Not used for this provider.
+type SimScalingTargetConfig struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *SimScalingTargetConfig) Reset() {
+	*x = SimScalingTargetConfig{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_sim_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SimScalingTargetConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SimScalingTargetConfig) ProtoMessage() {}
+
+func (x *SimScalingTargetConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_sim_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SimScalingTargetConfig.ProtoReflect.Descriptor instead.
+func (*SimScalingTargetConfig) Descriptor() ([]byte, []int) {
+	return file_sim_proto_rawDescGZIP(), []int{4}
 }
 
 var File_sim_proto protoreflect.FileDescriptor
@@ -322,24 +319,23 @@ var file_sim_proto_rawDesc = []byte{
 	0x6b, 0x39, 0x73, 0x61, 0x75, 0x74, 0x6f, 0x73, 0x63, 0x61, 0x6c, 0x65, 0x72, 0x2e, 0x70, 0x72,
 	0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x73, 0x2e, 0x6d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x73, 0x2e,
 	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x4c, 0x6f, 0x61, 0x64,
-	0x52, 0x04, 0x6c, 0x6f, 0x61, 0x64, 0x22, 0xc0, 0x01, 0x0a, 0x10, 0x53, 0x69, 0x6d, 0x4d, 0x65,
-	0x74, 0x72, 0x69, 0x63, 0x73, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x1f, 0x0a, 0x0b, 0x6d,
-	0x65, 0x74, 0x72, 0x69, 0x63, 0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x0a, 0x6d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x66, 0x0a, 0x12,
-	0x61, 0x75, 0x74, 0x6f, 0x73, 0x63, 0x61, 0x6c, 0x65, 0x72, 0x73, 0x5f, 0x63, 0x6f, 0x6e, 0x66,
-	0x69, 0x67, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x37, 0x2e, 0x6b, 0x39, 0x73, 0x61, 0x75,
-	0x74, 0x6f, 0x73, 0x63, 0x61, 0x6c, 0x65, 0x72, 0x2e, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65,
-	0x72, 0x73, 0x2e, 0x6d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x2e, 0x41, 0x75, 0x74, 0x6f, 0x73, 0x63, 0x61, 0x6c, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x66, 0x69,
-	0x67, 0x52, 0x11, 0x61, 0x75, 0x74, 0x6f, 0x73, 0x63, 0x61, 0x6c, 0x65, 0x72, 0x73, 0x43, 0x6f,
-	0x6e, 0x66, 0x69, 0x67, 0x22, 0x23, 0x0a, 0x0c, 0x53, 0x65, 0x6c, 0x65, 0x63, 0x74, 0x6f, 0x72,
-	0x4b, 0x65, 0x79, 0x73, 0x12, 0x13, 0x0a, 0x0f, 0x41, 0x55, 0x54, 0x4f, 0x53, 0x43, 0x41, 0x4c,
-	0x45, 0x52, 0x5f, 0x4e, 0x41, 0x4d, 0x45, 0x10, 0x00, 0x22, 0x15, 0x0a, 0x13, 0x53, 0x63, 0x61,
-	0x6c, 0x69, 0x6e, 0x67, 0x54, 0x61, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67,
-	0x42, 0x31, 0x5a, 0x2f, 0x6b, 0x39, 0x73, 0x2d, 0x61, 0x75, 0x74, 0x6f, 0x73, 0x63, 0x61, 0x6c,
-	0x65, 0x72, 0x2f, 0x70, 0x6b, 0x67, 0x2f, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x73,
-	0x2f, 0x6d, 0x65, 0x72, 0x69, 0x63, 0x73, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x3b, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x52, 0x04, 0x6c, 0x6f, 0x61, 0x64, 0x22, 0x94, 0x01, 0x0a, 0x09, 0x53, 0x69, 0x6d, 0x43, 0x6f,
+	0x6e, 0x66, 0x69, 0x67, 0x12, 0x1f, 0x0a, 0x0b, 0x6d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x5f, 0x6e,
+	0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x6d, 0x65, 0x74, 0x72, 0x69,
+	0x63, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x66, 0x0a, 0x12, 0x61, 0x75, 0x74, 0x6f, 0x73, 0x63, 0x61,
+	0x6c, 0x65, 0x72, 0x73, 0x5f, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x18, 0x02, 0x20, 0x03, 0x28,
+	0x0b, 0x32, 0x37, 0x2e, 0x6b, 0x39, 0x73, 0x61, 0x75, 0x74, 0x6f, 0x73, 0x63, 0x61, 0x6c, 0x65,
+	0x72, 0x2e, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x73, 0x2e, 0x6d, 0x65, 0x74, 0x72,
+	0x69, 0x63, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x41, 0x75, 0x74, 0x6f, 0x73, 0x63,
+	0x61, 0x6c, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x52, 0x11, 0x61, 0x75, 0x74, 0x6f,
+	0x73, 0x63, 0x61, 0x6c, 0x65, 0x72, 0x73, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x22, 0x11, 0x0a,
+	0x0f, 0x53, 0x69, 0x6d, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67,
+	0x22, 0x18, 0x0a, 0x16, 0x53, 0x69, 0x6d, 0x53, 0x63, 0x61, 0x6c, 0x69, 0x6e, 0x67, 0x54, 0x61,
+	0x72, 0x67, 0x65, 0x74, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x42, 0x31, 0x5a, 0x2f, 0x6b, 0x39,
+	0x73, 0x2d, 0x61, 0x75, 0x74, 0x6f, 0x73, 0x63, 0x61, 0x6c, 0x65, 0x72, 0x2f, 0x70, 0x6b, 0x67,
+	0x2f, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x73, 0x2f, 0x6d, 0x65, 0x72, 0x69, 0x63,
+	0x73, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x3b, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x06, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -354,20 +350,19 @@ func file_sim_proto_rawDescGZIP() []byte {
 	return file_sim_proto_rawDescData
 }
 
-var file_sim_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_sim_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_sim_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_sim_proto_goTypes = []interface{}{
-	(SimMetricsConfig_SelectorKeys)(0), // 0: k9sautoscaler.providers.metrics.proto.SimMetricsConfig.SelectorKeys
-	(*MetricLoad)(nil),                 // 1: k9sautoscaler.providers.metrics.proto.MetricLoad
-	(*AutoscalerConfig)(nil),           // 2: k9sautoscaler.providers.metrics.proto.AutoscalerConfig
-	(*SimMetricsConfig)(nil),           // 3: k9sautoscaler.providers.metrics.proto.SimMetricsConfig
-	(*ScalingTargetConfig)(nil),        // 4: k9sautoscaler.providers.metrics.proto.ScalingTargetConfig
-	(*durationpb.Duration)(nil),        // 5: google.protobuf.Duration
+	(*MetricLoad)(nil),             // 0: k9sautoscaler.providers.metrics.proto.MetricLoad
+	(*AutoscalerConfig)(nil),       // 1: k9sautoscaler.providers.metrics.proto.AutoscalerConfig
+	(*SimConfig)(nil),              // 2: k9sautoscaler.providers.metrics.proto.SimConfig
+	(*SimMetricConfig)(nil),        // 3: k9sautoscaler.providers.metrics.proto.SimMetricConfig
+	(*SimScalingTargetConfig)(nil), // 4: k9sautoscaler.providers.metrics.proto.SimScalingTargetConfig
+	(*durationpb.Duration)(nil),    // 5: google.protobuf.Duration
 }
 var file_sim_proto_depIdxs = []int32{
 	5, // 0: k9sautoscaler.providers.metrics.proto.MetricLoad.timespan:type_name -> google.protobuf.Duration
-	1, // 1: k9sautoscaler.providers.metrics.proto.AutoscalerConfig.load:type_name -> k9sautoscaler.providers.metrics.proto.MetricLoad
-	2, // 2: k9sautoscaler.providers.metrics.proto.SimMetricsConfig.autoscalers_config:type_name -> k9sautoscaler.providers.metrics.proto.AutoscalerConfig
+	0, // 1: k9sautoscaler.providers.metrics.proto.AutoscalerConfig.load:type_name -> k9sautoscaler.providers.metrics.proto.MetricLoad
+	1, // 2: k9sautoscaler.providers.metrics.proto.SimConfig.autoscalers_config:type_name -> k9sautoscaler.providers.metrics.proto.AutoscalerConfig
 	3, // [3:3] is the sub-list for method output_type
 	3, // [3:3] is the sub-list for method input_type
 	3, // [3:3] is the sub-list for extension type_name
@@ -406,7 +401,7 @@ func file_sim_proto_init() {
 			}
 		}
 		file_sim_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SimMetricsConfig); i {
+			switch v := v.(*SimConfig); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -418,7 +413,19 @@ func file_sim_proto_init() {
 			}
 		}
 		file_sim_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ScalingTargetConfig); i {
+			switch v := v.(*SimMetricConfig); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_sim_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SimScalingTargetConfig); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -435,14 +442,13 @@ func file_sim_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_sim_proto_rawDesc,
-			NumEnums:      1,
-			NumMessages:   4,
+			NumEnums:      0,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_sim_proto_goTypes,
 		DependencyIndexes: file_sim_proto_depIdxs,
-		EnumInfos:         file_sim_proto_enumTypes,
 		MessageInfos:      file_sim_proto_msgTypes,
 	}.Build()
 	File_sim_proto = out.File

@@ -6,19 +6,32 @@ package k9sautoscaler.providers.metrics.proto;
 
 option go_package = "k9s-autoscaler/pkg/providers/metrics/proto;proto";
 
+message AzureMonitorMetricConfig {
+    // Metric aggregation type as supported by the metric.
+    enum Aggregation {
+        None = 0;
+        Average = 1;
+        Maximum = 2;
+        Minimum = 3;
+        Count = 4;
+        Total = 5;
+        RatePerMinute = 6;
+    }
+    // Target Azure resource URI. Required selector.
+    string resourceURI = 1;
+    // Metric Azure namespace. Required selector.
+    string metricNamespace = 2;
+    // Aggeragtion type for this metric. Must be supported by the metric.
+    Aggregation aggregation = 3;
+    // Filter values using expressions. Optional selector.
+    optional string filter = 4;
+}
+
 // Configuration for Azure Monitor based metrics provider.
 // Authentication is handled using default Azure credential mechanism.
 // See: https://learn.microsoft.com/en-us/azure/developer/go/azure-sdk-authentication
 // It is important that the metrics query returns exactly 1 time series to be usable
 // in autoscaling.
 message AzureMonitorConfig {
-    enum SelectorLabels {
-        // Target Azure resource URI. Required selector.
-        ResourceURI = 0;
-        // Metric Azure namespace. Required selector.
-        MetricNamespace = 1;
-        // Filter values using expressions. Optional selector.
-        Filter = 2;
-    }
 }
 

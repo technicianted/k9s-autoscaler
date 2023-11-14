@@ -62,11 +62,11 @@ func TestAutoscalerControllerNoScale(t *testing.T) {
 		}).AnyTimes()
 
 	metricsCallbackMock := metricsmocks.NewMockMetricsClient(mockCtrl)
-	metricsCallbackMock.EXPECT().GetMetric(gomock.Any(), t.Name(), t.Name(), "testmetric").Return(
+	metricsCallbackMock.EXPECT().GetMetric(gomock.Any(), t.Name(), t.Name(), "testmetric", gomock.Any()).Return(
 		[]int64{1.0},
 		time.Now(),
 		nil).AnyTimes()
-	metricsGetter := metrics.NewClient(metricsCallbackMock)
+	metricsGetter := metrics.NewClient(storageClient, metricsCallbackMock)
 
 	resyncPeriod := time.Second
 	downscaleStabilisationWindow := 100 * time.Millisecond

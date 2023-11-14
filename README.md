@@ -13,15 +13,15 @@ K9s Autoscaler is a weekend project to explore the idea of running Kubernetes Ho
 Early stage development.
 
 #### Available storage clients
-* **Inline**: Load autoscaler configurations from a yaml file.
+* **[Inline](pkg/providers/storage/proto/inline.proto)**: Load autoscaler configurations from a yaml file.
 
 #### Available metrics clients
-* **Sim**: Simulation of dummy metrics for testing.
-* **Azure Monitor**: Read metric values of a resource from Azure Monitor metrics API.
+* **[Sim](pkg/providers/metrics/proto/sim.proto)**: Simulation of dummy metrics for testing.
+* **[Azure Monitor](pkg/providers/metrics/proto/azuremonitor.proto)**: Read metric values of a resource from Azure Monitor metrics API.
 
 #### Available scalers
-* **Sim**: Simulation of dummy scaling that works with Sim metrics clients to provide proportional scale metrics.
-* **Azure Cognitive Services**: Scales an Azure Cognitive Services resource targetting a specific deployment.
+* **[Sim](pkg/providers/metrics/proto/sim.proto)**: Simulation of dummy scaling that works with Sim metrics clients to provide proportional scale metrics.
+* **[Azure Cognitive Services](pkg/providers/scaling/proto/azuredeployment.proto)**: Scales an Azure Cognitive Services resource targetting a specific deployment.
 
 ### Current usage
 
@@ -45,31 +45,29 @@ storageClient:
       spec:
         min: 1
         max: 30
+        target:
+          # set provider target to scaling sim
+          config:
+            "@type": type.googleapis.com/k9sautoscaler.providers.metrics.proto.SimScalingTargetConfig
         metrics:
         # list of metrics and their targets. metricsClient must be able to provide
         # values for these.
         - name: testmetric
           target: 70
-          selector:
-            # internal selector used specifically by sim metrics and scaler.
-            AUTOSCALER_NAME: testauto1
+          # set metrics provider for this metric to sim
+          config:
+            "@type": type.googleapis.com/k9sautoscaler.providers.metrics.proto.SimMetricConfig
 # metricsClient provides an adapter for reading metrics values.
 metricsClient:
   # sim is a metricsClient and scalingClient that can be used to simulate scaling
   # and metrics reading based on predefined time intervals.
-  # it returns a metric based on average simulated load percentage.
   config:
-    "@type": type.googleapis.com/k9sautoscaler.providers.metrics.proto.SimMetricsConfig
+    "@type": type.googleapis.com/k9sautoscaler.providers.metrics.proto.SimConfig
     metricName: testmetric
     autoscalersConfig:
     - autoscalerName: testauto1
       autoscalerNamespace: testnamespace
-      # tell the simulation the max possible load per instance. used to calculate
-      # load percentage metric.
       maxLoadPerInstance: 10.0
-      # describe simulated total load on the system in a periodic manner. once
-      # time reaches the end of all defined periods, it starts from first period
-      # again.
       load:
       - timespan: 20s
         load: 100
@@ -81,14 +79,12 @@ metricsClient:
 scalingClient:
   # sim is a scalingClient that works with sim metrics client.
   config:
-    "@type": type.googleapis.com/k9sautoscaler.providers.metrics.proto.SimMetricsConfig
+    "@type": type.googleapis.com/k9sautoscaler.providers.metrics.proto.SimConfig
 # eventsClient provides an adapter for the autoscaler events.
 eventsClient:
   # klog logs status updates to klogger.
   config:
     "@type": type.googleapis.com/k9sautoscaler.providers.events.proto.KLog
-# run the autoscaler sync loop every 5s. in a production setup a typical value
-# is 15s.
 resyncPeriod: 5s
 ```
 

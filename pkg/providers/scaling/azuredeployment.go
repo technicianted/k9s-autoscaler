@@ -5,6 +5,7 @@ package scaling
 import (
 	"context"
 	"fmt"
+	"math"
 	"time"
 
 	prototypes "k9s-autoscaler/pkg/proto"
@@ -21,6 +22,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/cognitiveservices/armcognitiveservices"
 	protob "google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
+	"k8s.io/klog/v2"
 )
 
 type azureDeployment struct {
@@ -64,11 +66,21 @@ func (ad *azureDeployment) SetScaleTarget(ctx context.Context, name, namespace s
 		return fmt.Errorf("failed get operation: %v", err)
 	}
 
+	targetScale := target.Desired
+	if targetConfig.ScaleDenominator != nil {
+		if targetScale < *resp.SKU.Capacity {
+			targetScale = *targetConfig.ScaleDenominator * int32(math.Floor(float64(targetScale)/float64(*targetConfig.ScaleDenominator)))
+		} else {
+			targetScale = *targetConfig.ScaleDenominator * int32(math.Ceil(float64(targetScale)/float64(*targetConfig.ScaleDenominator)))
+		}
+		klog.InfoS("adjusting scale to denominator", "denominator", *targetConfig.ScaleDenominator, "desired", target.Desired, "adjusted", targetScale)
+	}
+
 	update := armcognitiveservices.Deployment{
 		Properties: resp.Properties,
 		SKU:        resp.SKU,
 	}
-	update.SKU.Capacity = to.Ptr[int32](target.Desired)
+	update.SKU.Capacity = to.Ptr[int32](targetScale)
 	poller, err := client.BeginCreateOrUpdate(
 		ctx,
 		resourceID.ResourceGroupName,

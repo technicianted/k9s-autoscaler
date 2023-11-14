@@ -28,15 +28,15 @@ message AutoscalerConfig {
 
 // Simulated metrics config.
 // see: examples/intree/sim.yaml for an example.
-message SimMetricsConfig {
-    enum SelectorKeys {
-        AUTOSCALER_NAME = 0;
-    }
-
+message SimConfig {
     string metric_name = 1;
     repeated AutoscalerConfig autoscalers_config = 2; 
 }
 
+// Autoscaler metric config. Not used.
+message SimMetricConfig {
+}
+
 // Dummy scaling target config. Not used for this provider.
-message ScalingTargetConfig {
+message SimScalingTargetConfig {
 }

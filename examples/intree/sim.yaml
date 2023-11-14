@@ -10,20 +10,24 @@ storageClient:
       spec:
         min: 1
         max: 30
+        target:
+          # set provider target to scaling sim
+          config:
+            "@type": type.googleapis.com/k9sautoscaler.providers.metrics.proto.SimScalingTargetConfig
         metrics:
         # list of metrics and their targets. metricsClient must be able to provide
         # values for these.
         - name: testmetric
           target: 70
-          selector:
-            # internal selector used specifically by sim metrics and scaler.
-            AUTOSCALER_NAME: testauto1
+          # set metrics provider for this metric to sim
+          config:
+            "@type": type.googleapis.com/k9sautoscaler.providers.metrics.proto.SimMetricConfig
 # metricsClient provides an adapter for reading metrics values.
 metricsClient:
   # sim is a metricsClient and scalingClient that can be used to simulate scaling
   # and metrics reading based on predefined time intervals.
   config:
-    "@type": type.googleapis.com/k9sautoscaler.providers.metrics.proto.SimMetricsConfig
+    "@type": type.googleapis.com/k9sautoscaler.providers.metrics.proto.SimConfig
     metricName: testmetric
     autoscalersConfig:
     - autoscalerName: testauto1
@@ -40,7 +44,7 @@ metricsClient:
 scalingClient:
   # sim is a scalingClient that works with sim metrics client.
   config:
-    "@type": type.googleapis.com/k9sautoscaler.providers.metrics.proto.SimMetricsConfig
+    "@type": type.googleapis.com/k9sautoscaler.providers.metrics.proto.SimConfig
 # eventsClient provides an adapter for the autoscaler events.
 eventsClient:
   # klog logs status updates to klogger.

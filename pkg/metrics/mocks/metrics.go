@@ -10,6 +10,7 @@ import (
 	time "time"
 
 	gomock "github.com/golang/mock/gomock"
+	anypb "google.golang.org/protobuf/types/known/anypb"
 )
 
 // MockMetricsClient is a mock of MetricsClient interface.
@@ -36,9 +37,9 @@ func (m *MockMetricsClient) EXPECT() *MockMetricsClientMockRecorder {
 }
 
 // GetMetric mocks base method.
-func (m *MockMetricsClient) GetMetric(ctx context.Context, metricName, namespace string, selector map[string]string) ([]int64, time.Time, error) {
+func (m *MockMetricsClient) GetMetric(ctx context.Context, metricName, autoscalername, namespace string, config *anypb.Any) ([]int64, time.Time, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetMetric", ctx, metricName, namespace, selector)
+	ret := m.ctrl.Call(m, "GetMetric", ctx, metricName, autoscalername, namespace, config)
 	ret0, _ := ret[0].([]int64)
 	ret1, _ := ret[1].(time.Time)
 	ret2, _ := ret[2].(error)
@@ -46,7 +47,7 @@ func (m *MockMetricsClient) GetMetric(ctx context.Context, metricName, namespace
 }
 
 // GetMetric indicates an expected call of GetMetric.
-func (mr *MockMetricsClientMockRecorder) GetMetric(ctx, metricName, namespace, selector interface{}) *gomock.Call {
+func (mr *MockMetricsClientMockRecorder) GetMetric(ctx, metricName, autoscalername, namespace, config interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMetric", reflect.TypeOf((*MockMetricsClient)(nil).GetMetric), ctx, metricName, namespace, selector)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMetric", reflect.TypeOf((*MockMetricsClient)(nil).GetMetric), ctx, metricName, autoscalername, namespace, config)
 }

@@ -20,33 +20,42 @@ message Metric {
     string name = 1;
 	// Target absolute value.
     int64 target = 2;
-	// Selector key/value pairs to be passed to client.
-	map<string,string> selector = 3;
+	// Provider specific configurations.
+	google.protobuf.Any config = 3;
 }
 
 // Define the autoscaler scaling policy.
 // see: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#scaling-policies
 message ScalingPolicy {
+	// Scaling value type.
+	enum ValueType {
+		// Given value is an absolute number of scale units.
+		Units = 0;
+		// Given value is a percentage of current scale.
+		Percent = 1;
+	}
+
+	// Type of value. Default to Units.
+	ValueType value_type = 1;
 	// value contains the amount of change which is permitted by the policy.
 	// It must be greater than zero
-	int32 value = 1;
+	int32 value = 2;
 
 	// periodSeconds specifies the window of time for which the policy should hold true.
 	// PeriodSeconds must be greater than zero and less than or equal to 1800 (30 min).
-	int32 period_seconds = 2;
+	int32 period_seconds = 3;
 }
 
 // Define scaling rules:
 // see: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#scaling-policies
 message ScalingRules {
     enum PolicySelect {
-        Unset = 0;
     	// MaxChangePolicySelect  selects the policy with the highest possible change.
-	    Max = 1;
+	    Max = 0;
 	    // MinChangePolicySelect selects the policy with the lowest possible change.
-	    Min = 2;
+	    Min = 1;
 	    // DisabledPolicySelect disables the scaling in this direction.
-	    Disabled = 3;
+	    Disabled = 2;
     }
 
 	// stabilizationWindowSeconds is the number of seconds for which past recommendations should be
@@ -58,7 +67,7 @@ message ScalingRules {
 	optional int32 stabilization_window_seconds = 1;
 	// selectPolicy is used to specify which policy should be used.
 	// If not set, the default value Max is used.
-	optional PolicySelect select_policy = 2;
+	PolicySelect select_policy = 2;
 	// policies is a list of potential scaling polices which can be used during scaling.
 	// At least one policy must be specified, otherwise the HPAScalingRules will be discarded as invalid
 	repeated ScalingPolicy policies = 3;

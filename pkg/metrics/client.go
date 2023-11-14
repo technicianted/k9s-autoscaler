@@ -5,11 +5,13 @@ package metrics
 import (
 	"context"
 	"fmt"
-	"strings"
 	"time"
 
 	"k9s-autoscaler/pkg/metrics/types"
+	"k9s-autoscaler/pkg/storage"
+	storagetypes "k9s-autoscaler/pkg/storage/types"
 
+	"google.golang.org/protobuf/types/known/anypb"
 	"k8s.io/apimachinery/pkg/labels"
 	metricsclient "k8s.io/kubernetes/pkg/controller/podautoscaler/metrics"
 )
@@ -19,47 +21,54 @@ import (
 type client struct {
 	metricsclient.MetricsClient
 
-	callbackClient types.MetricsClient
+	autoscalerGetter storagetypes.AutoscalerGetter
+	callbackClient   types.MetricsClient
 }
 
 // Create a new adapter k8s MetricsClient that calls callbackClient to get metric
 // values.
-func NewClient(callbackClient types.MetricsClient) metricsclient.MetricsClient {
+func NewClient(autoscalerGetter storagetypes.AutoscalerGetter, callbackClient types.MetricsClient) metricsclient.MetricsClient {
 	return &client{
-		callbackClient: callbackClient,
+		autoscalerGetter: autoscalerGetter,
+		callbackClient:   callbackClient,
 	}
 }
 
 func (c *client) GetExternalMetric(metricName string, namespace string, selector labels.Selector) ([]int64, time.Time, error) {
-	mapSelector, err := convertSelectorToLabelsMap(selector)
+	autoscalerName := storage.DecodeMetricHPA(selector)
+	as, err := c.autoscalerGetter.Get(autoscalerName, namespace)
 	if err != nil {
-		return nil, time.Time{}, err
+		return nil, time.Time{}, fmt.Errorf("failed to get autoscaler: %v", err)
+	}
+
+	var config *anypb.Any
+	for _, metric := range as.Spec.Metrics {
+		if metric.Name == metricName {
+			config = metric.Config
+			break
+		}
+	}
+	if config == nil {
+		return nil, time.Time{}, fmt.Errorf("could not find configs for metric %s", metricName)
 	}
 
 	startTime := time.Now()
 	values, ts, err := c.callbackClient.GetMetric(
 		context.TODO(),
 		metricName,
-		namespace, mapSelector)
+		autoscalerName,
+		namespace,
+		config)
 	if err != nil {
 		metricLatencyMetric.WithLabelValues(namespace, metricName, "true").Observe(float64(time.Since(startTime)))
 		return nil, time.Time{}, err
 	}
 	metricLatencyMetric.WithLabelValues(namespace, metricName, "").Observe(float64(time.Since(startTime)))
 
-	return values, ts, nil
-}
-
-func convertSelectorToLabelsMap(selector labels.Selector) (map[string]string, error) {
-	selectorMap := map[string]string{}
-	exprs := strings.Split(selector.String(), ",")
-	for _, expr := range exprs {
-		parts := strings.Split(expr, "=")
-		if len(parts) != 2 {
-			return nil, fmt.Errorf("invalid selector expression: %s", expr)
-		}
-		selectorMap[parts[0]] = parts[1]
+	// autoscaler expect millis representation
+	for i, value := range values {
+		values[i] = value * 1000
 	}
 
-	return selectorMap, nil
+	return values, ts, nil
 }
