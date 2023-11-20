@@ -1,0 +1,29 @@
+// Copyright (c) technicianted. All rights reserved.
+// Licensed under the MIT License.
+syntax = "proto3";
+
+package k9sautoscaler.providers.metrics.proto;
+
+option go_package = "k9s-autoscaler/pkg/providers/metrics/proto;proto";
+
+import "azuremonitor.proto";
+
+message AzureOAIMetricConfig {
+    enum Metric {
+        None = 0;
+        // Measures the percentage of rate of 429 request to total rate of
+        // requests.
+        // Useful for Provisioned Managed offers.
+        Percent429Rate = 1;
+    }
+
+    // Target Azure resource URI.
+    string resourceURI = 1;
+    // Taget AOAI deployment name.
+    string deploymentName = 2;
+}
+
+// Convience composed, ready to use metrics for Azure OpenAI services.
+message AzureOAIConfig {
+    AzureMonitorConfig azure_monitor_config = 1;
+}

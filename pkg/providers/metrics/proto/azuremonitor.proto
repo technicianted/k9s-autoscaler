@@ -17,13 +17,13 @@ message AzureMonitorMetricConfig {
         Total = 5;
         RatePerMinute = 6;
     }
-    // Target Azure resource URI. Required selector.
+    // Target Azure resource URI.
     string resourceURI = 1;
-    // Metric Azure namespace. Required selector.
+    // Metric Azure namespace.
     string metricNamespace = 2;
     // Aggeragtion type for this metric. Must be supported by the metric.
     Aggregation aggregation = 3;
-    // Filter values using expressions. Optional selector.
+    // Filter values using expressions.
     optional string filter = 4;
 }
 

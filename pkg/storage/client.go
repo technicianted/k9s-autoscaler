@@ -243,6 +243,7 @@ func autoscalerToHPA(autoscaler *prototypes.Autoscaler) (*v2.HorizontalPodAutosc
 	if err != nil {
 		return nil, err
 	}
+	klog.InfoS("behavior", "behavior", behavior)
 	return &v2.HorizontalPodAutoscaler{
 		TypeMeta: v1.TypeMeta{
 			Kind:       "HorizontalPodAutoscaler",

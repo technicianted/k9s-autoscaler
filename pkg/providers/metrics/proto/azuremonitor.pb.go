@@ -23,6 +23,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Metric aggregation type as supported by the metric.
 type AzureMonitorMetricConfig_Aggregation int32
 
 const (
@@ -89,13 +90,13 @@ type AzureMonitorMetricConfig struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Target Azure resource URI. Required selector.
+	// Target Azure resource URI.
 	ResourceURI string `protobuf:"bytes,1,opt,name=resourceURI,proto3" json:"resourceURI,omitempty"`
-	// Metric Azure namespace. Required selector.
+	// Metric Azure namespace.
 	MetricNamespace string `protobuf:"bytes,2,opt,name=metricNamespace,proto3" json:"metricNamespace,omitempty"`
 	// Aggeragtion type for this metric. Must be supported by the metric.
 	Aggregation AzureMonitorMetricConfig_Aggregation `protobuf:"varint,3,opt,name=aggregation,proto3,enum=k9sautoscaler.providers.metrics.proto.AzureMonitorMetricConfig_Aggregation" json:"aggregation,omitempty"`
-	// Filter values using expressions. Optional selector.
+	// Filter values using expressions.
 	Filter *string `protobuf:"bytes,4,opt,name=filter,proto3,oneof" json:"filter,omitempty"`
 }
 
